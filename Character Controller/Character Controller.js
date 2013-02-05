@@ -15,10 +15,10 @@ class CharacterHorizontalMovementConfiguration {
 	var acceleration = 10.0;
 	
 	// Deceleration when stopped moving
-	var deceleration = 15.0;
+	var deceleration = 25.0;
 	
 	// Movement direction
-	var direction = Vector3.zero;
+	var direction = Vector3.right;
 	
 	// Movement checking
 	var isMoving = false;
@@ -66,17 +66,23 @@ function UpdateGroundMovement() {
 	
 	groundMovement.isMoving = Mathf.Abs (h) > 0.1;
 	
-	if (groundMovement.isMoving){
-		groundMovement.direction = Vector3 (h, 0, 0);
-		groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime;
-		groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);
-	}else {
-		groundMovement.direction = Vector3.zero;
-		if (controller.isGrounded)
-			groundMovement.walkSpeed -= groundMovement.deceleration * Time.deltaTime;
-		else
-			groundMovement.walkSpeed -= airMovement.deceleration * Time.deltaTime;
-		groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
+	if (controller.isGrounded){
+		if (groundMovement.isMoving){
+			if (h > 0)
+				groundMovement.direction = Vector3.right;
+			else if (h < 0)
+				groundMovement.direction = Vector3.left;
+				
+			groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime;
+			groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);
+		}else {
+			//groundMovement.direction = Vector3.zero;
+			if (controller.isGrounded)
+				groundMovement.walkSpeed -= groundMovement.deceleration * Time.deltaTime;
+			else
+				groundMovement.walkSpeed -= airMovement.deceleration * Time.deltaTime;
+			groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
+		}
 	}
 		
 }
