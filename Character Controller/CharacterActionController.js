@@ -54,6 +54,15 @@ class AnimationConfiguration {
 
 var animationCfg : AnimationConfiguration;
 
+class InputController {
+	var horizontalAxisRaw = 0;
+	
+	var jumpButtonDown = false;
+	
+}
+
+var inputController : InputController;
+
 function Start () {
 	var run = animation["run"];
 	run.speed *= animationCfg.walkingSpeedModifier;
@@ -62,7 +71,8 @@ function Start () {
 
 // Handles ground movement
 function UpdateGroundMovement() {
-	var h = Input.GetAxisRaw ("Horizontal");
+	//var h = Input.GetAxisRaw ("Horizontal");
+	var h = inputController.horizontalAxisRaw;
 	
 	groundMovement.isMoving = Mathf.Abs (h) > 0.1;
 	
@@ -88,7 +98,8 @@ function UpdateGroundMovement() {
 }
 
 function UpdateAirMovement() {
-	if (controller.isGrounded && Input.GetButtonDown("Jump"))
+	//if (controller.isGrounded && Input.GetButtonDown("Jump"))
+	if (controller.isGrounded && inputController.jumpButtonDown)
 		airMovement.airSpeed += airMovement.initialSpeed;
 		
 	// Apply gravity if character is not grounded
@@ -105,7 +116,7 @@ function UpdateAnimation() {
 		if (airMovement.airSpeed >= 0)
 			animation.CrossFade("jump");
 		else
-			animation.CrossFade("ledgeFall");
+			animation.CrossFade("jumpFall");
 		
 	} else {
 		if (groundMovement.isMoving)
@@ -140,3 +151,5 @@ function Update () {
 		
 	UpdateAnimation();
 }
+
+@script RequireComponent(CharacterController)
