@@ -1,15 +1,13 @@
 var controller : InputController;
 
 function Start () {
-	controller = transform.GetComponent(CharacterActionController).inputController;
+	controller = GetComponent(CharacterActionController).inputController;
 }
 
 function Update () {
 	//Debug.Log(controller);
 	controller.horizontalAxisRaw = Input.GetAxisRaw("Horizontal");
+	controller.jumpCommand = Input.GetButtonDown("Jump");
+	controller.attackCommand = Input.GetButtonDown("Fire1");
 	
-	if (Input.GetButtonDown("Jump"))
-		controller.jumpButtonDown = true;
-	else
-		controller.jumpButtonDown = false;
 }

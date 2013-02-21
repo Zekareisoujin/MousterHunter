@@ -1,9 +1,22 @@
 
 private var controller;
 
-var isGrounded : boolean;
+// Container class that contains various character states
+class CharacterStates {
+	// Show if the character is grounded, according to collider. Forgot what this is used for
+	var isGrounded = false;
+	
+	// Show if character is in the motion of attacking. In this case, movement inputs are disabled
+	var isAttacking = false;
+	
+	// If flinched, you can't do anything
+	var isFlinching = false;
+}
 
-// Helper class that contains all movement related data
+var currentState : CharacterStates;
+
+
+// Container class that contains all movement related data
 class CharacterHorizontalMovementConfiguration {
 	// Current walking speed
 	var walkSpeed = 0.0;
@@ -20,13 +33,19 @@ class CharacterHorizontalMovementConfiguration {
 	// Movement direction
 	var direction = Vector3.right;
 	
-	// Movement checking
+	// Flag indicating whether the movement button is being pressed
+	var isBeingMoved = false;
+	
+	// Flag to actually check if the character is moving, by checking horizontal speed
 	var isMoving = false;
 	
+	// Horizontal knockback velocity while flinched
+	var hFlinchRate = 2.0;
 }
 
 var groundMovement : CharacterHorizontalMovementConfiguration;
 
+// Container class that contains all aerial movement related data
 class CharacterVerticalMovementConfiguration {
 	// Horizontal speed
 	var airSpeed = 0.0;
@@ -42,6 +61,9 @@ class CharacterVerticalMovementConfiguration {
 	
 	// Horizontal deceleration while airborne
 	var deceleration = 1.0;
+	
+	// Vertical knockback velocity while flinched
+	var vFlinchRate = 2.0;
 }
 
 var airMovement : CharacterVerticalMovementConfiguration;
@@ -57,34 +79,75 @@ var animationCfg : AnimationConfiguration;
 class InputController {
 	var horizontalAxisRaw = 0;
 	
-	var jumpButtonDown = false;
+	var jumpCommand = false;
 	
+	var attackCommand = false;
 }
 
 var inputController : InputController;
 
+class AttackActionConfiguration {
+	// Check when attack collision is on
+	var isArmed = false;
+	
+	// To check when the next armed frame is on
+	var timeOfLastHit = 0.0;
+}
+
+var attackActionCfg : AttackActionConfiguration;
+
 function Start () {
 	var run = animation["run"];
 	run.speed *= animationCfg.walkingSpeedModifier;
+	
 	controller = GetComponent(CharacterController);
+}
+
+// Handles attack action
+function UpdateAttack() {
+	if (inputController.attackCommand && !currentState.isAttacking && !currentState.isFlinching){
+		currentState.isAttacking = true;
+		
+		animation.CrossFade("attack");
+		attackActionCfg.timeOfLastHit = 0;
+		//Debug.Log("attack start: " + Time.time);
+		StartCoroutine(WaitForAnimation(animation["attack"].length));
+	}
+	
+	if (currentState.isAttacking) {
+		// Update attack frequency
+		attackActionCfg.isArmed = (Time.time - GetComponent(CharacterStatus).attackFrequency >= attackActionCfg.timeOfLastHit);
+	} else
+		attackActionCfg.isArmed = false;
+}
+
+// Helper function
+function WaitForAnimation(time) {
+	yield WaitForSeconds(time);
+	//Debug.Log("attack finishes: " + Time.time);
+	currentState.isAttacking = false;
 }
 
 // Handles ground movement
 function UpdateGroundMovement() {
 	//var h = Input.GetAxisRaw ("Horizontal");
 	var h = inputController.horizontalAxisRaw;
-	
-	groundMovement.isMoving = Mathf.Abs (h) > 0.1;
-	
+
+	groundMovement.isBeingMoved = Mathf.Abs (h) > 0.1;
+
 	if (controller.isGrounded){
-		if (groundMovement.isMoving){
-			if (h > 0)
-				groundMovement.direction = Vector3.right;
-			else if (h < 0)
-				groundMovement.direction = Vector3.left;
+		if (groundMovement.isBeingMoved){
+		
+			if (!currentState.isAttacking){
+				if (h > 0)
+					groundMovement.direction = Vector3.right;
+				else if (h < 0)
+					groundMovement.direction = Vector3.left;
+					
+				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime;
 				
-			groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime;
-			groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);
+				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);
+			}
 		}else {
 			//groundMovement.direction = Vector3.zero;
 			if (controller.isGrounded)
@@ -94,55 +157,60 @@ function UpdateGroundMovement() {
 			groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
 		}
 	}
+	
+	groundMovement.isMoving = (groundMovement.walkSpeed == 0?false:true);
 		
 }
 
 function UpdateAirMovement() {
-	//if (controller.isGrounded && Input.GetButtonDown("Jump"))
-	if (controller.isGrounded && inputController.jumpButtonDown)
+	// Apply jumping logic - initial jumping force
+	if (controller.isGrounded && inputController.jumpCommand)
 		airMovement.airSpeed += airMovement.initialSpeed;
 		
 	// Apply gravity if character is not grounded
 	if (!controller.isGrounded)
 		airMovement.airSpeed += airMovement.gravity * Time.deltaTime;
 	else
-		airMovement.airSpeed = Mathf.Max(-1.0, airMovement.airSpeed);
+		airMovement.airSpeed = Mathf.Max(-0.1, airMovement.airSpeed);
 		
 	airMovement.airSpeed = Mathf.Max(airMovement.terminalSpeed, airMovement.airSpeed);
 }
 
 function UpdateAnimation() {
-	if (!controller.isGrounded){
-		if (airMovement.airSpeed >= 0)
-			animation.CrossFade("jump");
-		else
-			animation.CrossFade("jumpFall");
-		
-	} else {
-		if (groundMovement.isMoving)
-			animation.CrossFade("run");
-		else
-			animation.CrossFade("idle", 1.0);
+	if (!currentState.isAttacking){
+		if (!controller.isGrounded){
+			if (airMovement.airSpeed >= 0)
+				animation.CrossFade("jump");
+			else
+				animation.CrossFade("jumpFall");
+			
+		} else {
+			if (groundMovement.isMoving)
+				animation.CrossFade("run");
+			else
+				animation.CrossFade("idle", 1.0);
+		}
 	}
 }
 
 function Update () {
-	var displacement = Vector3.zero;
+	// Apply attack if possible
+	UpdateAttack();
 	
+	// Update acceleration according to button pressed
 	UpdateGroundMovement();
 	
+	// Activate jumping, update vertical speed according to gravity
 	UpdateAirMovement();
 	
+	var displacement = Vector3.zero;
 	displacement += groundMovement.direction * groundMovement.walkSpeed * Time.deltaTime;
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;
 	
-	isGrounded = controller.isGrounded;
-	
-	// Gravity
-	// displacement += airMovement.gravity * Time.deltaTime;
+	// Forgot what this variable is used for...
+	currentState.isGrounded = controller.isGrounded;
 	
 	// Apply movement if there is one
-	//Debug.Log(displacement);
 	controller.Move(displacement);
 				
 	// Update facing direction	
@@ -150,6 +218,24 @@ function Update () {
 		transform.rotation = Quaternion.LookRotation (groundMovement.direction);
 		
 	UpdateAnimation();
+}
+
+function ApplyFlinch(direction) {
+	currentState.isFlinching = true;
+	groundMovement.walkSpeed = groundMovement.hFlinchRate;
+	airMovement.airSpeed = airMovement.vFlinchRate;
+	// Temporary facing direction
+	groundMovement.direction = Vector3(direction,0,0);
+	animation.CrossFade("flinch");
+	
+	// Flinch for a fixed duration of 0.5s now
+	StartCoroutine(WaitUntilFlinchEnd(0.5));
+}
+
+function WaitUntilFlinchEnd(time) {
+	yield WaitForSeconds(time);
+	//Debug.Log("attack finishes: " + Time.time);
+	currentState.isFlinching = false;
 }
 
 @script RequireComponent(CharacterController)
