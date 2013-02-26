@@ -82,6 +82,12 @@ class InputController {
 	var jumpCommand = false;
 	
 	var attackCommand = false;
+	
+	var skill_1 = false;
+	
+	var skill_2 = false;
+	
+	var skill_3 = false;
 }
 
 var inputController : InputController;
@@ -120,6 +126,21 @@ function UpdateAttack() {
 	} else
 		attackActionCfg.isArmed = false;
 }
+
+function UpdateSkill()
+{
+	if(inputController.skill_1)
+	{
+		Debug.Log("skill 1");
+	}
+	if(inputController.skill_2)
+	{
+		Debug.Log("skill 2");
+	}
+	if(inputController.skill_3)
+	{
+		Debug.Log("skill 3");
+	}}
 
 // Helper function
 function WaitForAnimation(time) {
@@ -196,6 +217,8 @@ function UpdateAnimation() {
 function Update () {
 	// Apply attack if possible
 	UpdateAttack();
+	
+	UpdateSkill();
 	
 	// Update acceleration according to button pressed
 	UpdateGroundMovement();
