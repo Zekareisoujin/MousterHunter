@@ -11,6 +11,7 @@ class CharacterStates {
 	
 	// If flinched, you can't do anything
 	var isFlinching = false;
+	var flinchDurationEnd = 0.0;
 }
 
 var currentState : CharacterStates;
