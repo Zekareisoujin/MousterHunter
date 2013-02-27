@@ -31,7 +31,7 @@ function Update () {
 		
 		var diffx = enemy.position.x - transform.position.x;
 		//controller.attackCommand = ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.direction.x > 0));
-		if ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.direction.x > 0)){
+		if ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.controlledDirection.x > 0)){
 			controller.attackCommand = true;
 			controller.horizontalAxisRaw = 0;
 		} else

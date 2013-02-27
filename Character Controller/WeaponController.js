@@ -12,8 +12,7 @@ function Start () {
 }
 
 function CheckHit(other : Collider) {
-	Debug.Log("touched");
-	Debug.Log(other);
+	Debug.Log("touched" + other);
 	var stat = other.GetComponent(CharacterStatus);
 	
 	if (stat != null) {

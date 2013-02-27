@@ -28,10 +28,13 @@ class CharacterHorizontalMovementConfiguration {
 	var acceleration = 10.0;
 	
 	// Deceleration when stopped moving
-	var deceleration = 25.0;
+	var deceleration = -25.0;
 	
-	// Movement direction
-	var direction = Vector3.right;
+	// Direction according to button pressed
+	var controlledDirection = Vector3.right;
+	
+	// Actual moving direction
+	var movingDirection = 0;
 	
 	// Flag indicating whether the movement button is being pressed
 	var isBeingMoved = false;
@@ -60,7 +63,7 @@ class CharacterVerticalMovementConfiguration {
 	var terminalSpeed = -10.0;
 	
 	// Horizontal deceleration while airborne
-	var deceleration = 1.0;
+	var deceleration = -1.0;
 	
 	// Vertical knockback velocity while flinched
 	var vFlinchRate = 2.0;
@@ -155,27 +158,37 @@ function UpdateGroundMovement() {
 	var h = inputController.horizontalAxisRaw;
 
 	groundMovement.isBeingMoved = Mathf.Abs (h) > 0.1;
+	
+	if (groundMovement.walkSpeed == 0)
+		groundMovement.movingDirection = groundMovement.controlledDirection.x;
+	else
+		groundMovement.movingDirection = Mathf.Abs(groundMovement.walkSpeed) / groundMovement.walkSpeed;
 
 	if (controller.isGrounded){
 		if (groundMovement.isBeingMoved){
 		
 			if (!currentState.isAttacking){
 				if (h > 0)
-					groundMovement.direction = Vector3.right;
+					groundMovement.controlledDirection = Vector3.right;
 				else if (h < 0)
-					groundMovement.direction = Vector3.left;
+					groundMovement.controlledDirection = Vector3.left;
 					
-				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime;
-				
-				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);
+				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.controlledDirection.x;
+				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);			
+				groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, -groundMovement.maxWalkSpeed);
 			}
 		}else {
-			//groundMovement.direction = Vector3.zero;
+			//groundMovement.controlledDirection = Vector3.zero;
 			if (controller.isGrounded)
-				groundMovement.walkSpeed -= groundMovement.deceleration * Time.deltaTime;
+				groundMovement.walkSpeed += groundMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
 			else
-				groundMovement.walkSpeed -= airMovement.deceleration * Time.deltaTime;
-			groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
+				groundMovement.walkSpeed -= airMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
+			
+			if (groundMovement.movingDirection > 0)
+				groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
+			else if (groundMovement.movingDirection < 0)
+				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, 0);
+			
 		}
 	}
 	
@@ -227,7 +240,7 @@ function Update () {
 	UpdateAirMovement();
 	
 	var displacement = Vector3.zero;
-	displacement += groundMovement.direction * groundMovement.walkSpeed * Time.deltaTime;
+	displacement += Vector3(groundMovement.walkSpeed, 0, 0) * Time.deltaTime;
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;
 	
 	// Forgot what this variable is used for...
@@ -237,18 +250,17 @@ function Update () {
 	controller.Move(displacement);
 				
 	// Update facing direction	
-	if (groundMovement.direction != Vector3.zero)
-		transform.rotation = Quaternion.LookRotation (groundMovement.direction);
+	if (groundMovement.controlledDirection != Vector3.zero)
+		transform.rotation = Quaternion.LookRotation (groundMovement.controlledDirection);
 		
 	UpdateAnimation();
 }
 
 function ApplyFlinch(direction) {
 	currentState.isFlinching = true;
-	groundMovement.walkSpeed = groundMovement.hFlinchRate;
+	groundMovement.walkSpeed = groundMovement.hFlinchRate * direction;
 	airMovement.airSpeed = airMovement.vFlinchRate;
-	// Temporary facing direction
-	groundMovement.direction = Vector3(direction,0,0);
+	groundMovement.controlledDirection = Vector3(-direction,0,0);
 	animation.CrossFade("flinch");
 	
 	// Flinch for a fixed duration of 0.5s now
