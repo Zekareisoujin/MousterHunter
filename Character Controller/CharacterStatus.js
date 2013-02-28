@@ -26,9 +26,17 @@ var difficultyModifier	: float = 1.0;
 // It means that attack only hit every period indicated here
 var attackFrequency : float = 0.1;
 
+// GUI component
+var lifeBarObject : GameObject;
+var lifeBarScript : GUIBar;
+
 function Start () {
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
 	currentLife = maxLife;
+	if (lifeBarObject != null) {
+		lifeBarScript = lifeBarObject.GetComponent(GUIBar);
+		lifeBarScript.SetDisplayValue(1.0);
+	}
 }
 
 function Update () {
@@ -55,4 +63,14 @@ function UpdateDifficultySetting(newDifficultyModifier) {
 	difficultyModifier = newDifficultyModifier;
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
 	currentLife = maxLife;
+}
+
+function ApplyDamage(dmg) {
+	currentLife -= dmg;
+	currentLife = Mathf.Max(0, currentLife);
+	
+	if (lifeBarScript != null){
+		var displayVal = currentLife / maxLife;	
+		lifeBarScript.SetDisplayValue(displayVal);
+	}
 }

@@ -23,7 +23,7 @@ function CheckHit(other : Collider) {
 			
 			// Apply damage:
 			var dmg = calc.CalculateDamage(holderStats.GetAttackPower(), defenderStats.GetDefensePower());
-			defenderStats.currentLife -= dmg;
+			defenderStats.ApplyDamage(dmg);
 			
 			// Apply flinch, flinching direction is based on relative positions of the weapon at the moment
 			var diffx = other.transform.position.x - transform.parent.position.x;
