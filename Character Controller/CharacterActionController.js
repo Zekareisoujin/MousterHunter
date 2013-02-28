@@ -1,8 +1,16 @@
 
 private var controller;
 
+var deathEffect : GameObject;
+
+// Temporary
+var isFocused = false;
+
 // Container class that contains various character states
 class CharacterStates {
+	// Check whether the character is controllable
+	var isControllable =  true;
+
 	// Show if the character is grounded, according to collider. Forgot what this is used for
 	var isGrounded = false;
 	
@@ -12,6 +20,9 @@ class CharacterStates {
 	// If flinched, you can't do anything
 	var isFlinching = false;
 	var flinchDurationEnd = 0.0;
+	
+	// When life drop below 0
+	var isDead = false;
 }
 
 var currentState : CharacterStates;
@@ -115,11 +126,12 @@ function Start () {
 
 function UpdateStatus() {
 	currentState.isFlinching = (Time.time < currentState.flinchDurationEnd);
+	currentState.isControllable = !currentState.isFlinching && !currentState.isDead;
 }
 
 // Handles attack action
 function UpdateAttack() {
-	if (inputController.attackCommand && !currentState.isAttacking && !currentState.isFlinching){
+	if (inputController.attackCommand && !currentState.isAttacking && currentState.isControllable){
 		currentState.isAttacking = true;
 		
 		animation.CrossFade("attack");
@@ -163,7 +175,7 @@ function UpdateGroundMovement() {
 	var h = inputController.horizontalAxisRaw;
 
 	// Whether the character is being controlled / allowed to be controlled
-	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && !currentState.isFlinching);
+	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && currentState.isControllable);
 	
 	if (groundMovement.walkSpeed == 0)
 		groundMovement.movingDirection = groundMovement.facingDirection.x;
@@ -216,20 +228,22 @@ function UpdateAirMovement() {
 }
 
 function UpdateAnimation() {
-	if (currentState.isFlinching)
-		animation.CrossFade("flinch");
-	else if (!currentState.isAttacking){
-		if (!controller.isGrounded){
-			if (airMovement.airSpeed >= 0)
-				animation.CrossFade("jump");
-			else
-				animation.CrossFade("jumpFall");
-			
-		} else {
-			if (groundMovement.isMoving)
-				animation.CrossFade("run");
-			else
-				animation.CrossFade("idle", 1.0);
+	if (!currentState.isDead) {
+		if (currentState.isFlinching)
+			animation.CrossFade("flinch");
+		else if (!currentState.isAttacking){
+			if (!controller.isGrounded){
+				if (airMovement.airSpeed >= 0)
+					animation.CrossFade("jump");
+				else
+					animation.CrossFade("jumpFall");
+				
+			} else {
+				if (groundMovement.isMoving)
+					animation.CrossFade("run");
+				else
+					animation.CrossFade("idle", 1.0);
+			}
 		}
 	}
 }
@@ -253,6 +267,7 @@ function Update () {
 	var displacement = Vector3.zero;
 	displacement += Vector3(groundMovement.walkSpeed, 0, 0) * Time.deltaTime;
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;
+	displacement += Vector3(0, 0, -transform.position.z);
 	
 	// Forgot what this variable is used for...
 	currentState.isGrounded = controller.isGrounded;
@@ -268,27 +283,44 @@ function Update () {
 }
 
 function ApplyKnockback(direction) {
-	//currentState.isFlinching = true;
-	groundMovement.walkSpeed = groundMovement.hFlinchRate * direction;
-	airMovement.airSpeed = airMovement.vFlinchRate;
-	groundMovement.facingDirection = Vector3(-direction,0,0);
-	//animation.CrossFade("flinch");
-	
-	// Flinch for a fixed duration of 0.5s now
-	//StartCoroutine(WaitUntilFlinchEnd(0.5));
+	if (!currentState.isDead) {
+		groundMovement.walkSpeed = groundMovement.hFlinchRate * direction;
+		airMovement.airSpeed = airMovement.vFlinchRate;
+		groundMovement.facingDirection = Vector3(-direction,0,0);
+	}
 }
 
 function ApplyFlinch(duration) {
-	currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
-	
-	currentState.isAttacking = false;
-	attackActionCfg.isArmed = false;
+	if (!currentState.isDead) {
+		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
+		
+		currentState.isAttacking = false;
+		attackActionCfg.isArmed = false;
+	}
 }
 
-/*function WaitUntilFlinchEnd(time) {
-	yield WaitForSeconds(time);
-	//Debug.Log("attack finishes: " + Time.time);
-	currentState.isFlinching = false;
-}*/
+function ApplyDeath() {
+	if (!currentState.isDead) {
+		currentState.isDead = true;
+		currentState.isFlinching = false;
+		currentState.isAttacking = false;
+		attackActionCfg.isArmed = false;
+		animation.CrossFade("death");
+		StartCoroutine(DeathEffect());
+	}
+}
+
+function DeathEffect() {
+	yield WaitForSeconds(3.0);
+	var deathFx = Instantiate(deathEffect, transform.position, Quaternion.identity);
+	Destroy (deathFx, 5.0);
+	Destroy (this, 5.0);
+	transform.position.y -= 100;
+	
+	// Temporary
+	if (isFocused)
+		GameObject.Find("Main Camera").GetComponent(CameraFocus).enabled = false;
+}
 
 @script RequireComponent(CharacterController)
+@script RequireComponent(Rigidbody)

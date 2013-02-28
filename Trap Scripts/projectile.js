@@ -8,6 +8,10 @@ function OnCollisionEnter(collision : Collision) {
 	Destroy(transform.root.gameObject);
 }
 
+function OnTriggerEnter(other : Collider) {
+	Debug.Log(other);
+}
+
 function Start () {
 
 }

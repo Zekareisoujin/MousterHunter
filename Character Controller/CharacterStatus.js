@@ -67,7 +67,10 @@ function UpdateDifficultySetting(newDifficultyModifier) {
 
 function ApplyDamage(dmg) {
 	currentLife -= dmg;
-	currentLife = Mathf.Max(0, currentLife);
+	if (currentLife <= 0){
+		currentLife = 0;
+		SendMessage("ApplyDeath");
+	}
 	
 	if (lifeBarScript != null){
 		var displayVal = currentLife / maxLife;	
