@@ -1,36 +1,40 @@
 var holderAttackCfg;
-
 var holderStats;
 
 var theParent : Transform;
 
+var calc : Calculator;
+
 function Start () {
-	holderStats = transform.parent.GetComponent(CharacterStatus);
 	holderAttackCfg = theParent.GetComponent(CharacterActionController).attackActionCfg;
+	holderStats = theParent.GetComponent(CharacterStatus);
+	calc = Calculator.GetCalculator();
 	
 	Physics.IgnoreCollision(collider, theParent.collider);
 }
 
 function CheckHit(other : Collider) {
-	Debug.Log("touched" + other);
-	var stat = other.GetComponent(CharacterStatus);
+	//Debug.Log("touched " + other);
+	var defenderStats = other.GetComponent(CharacterStatus);
 	
-	if (stat != null) {
+	if (defenderStats != null) {
 		if (holderAttackCfg.isArmed) {
-			Debug.Log("really hit");
+			//Debug.Log("really hit");
 			
-			// Simple logic:
-			stat.life -= 5;
+			// Apply damage:
+			var dmg = calc.CalculateDamage(holderStats.GetAttackPower(), defenderStats.GetDefensePower());
+			defenderStats.currentLife -= dmg;
 			
 			// Apply flinch, flinching direction is based on relative positions of the weapon at the moment
 			var diffx = other.transform.position.x - transform.parent.position.x;
-			var direction;
-			if (diffx >= 0)
-				direction = 1;
-			else
-				direction = -1;
-			//Debug.Log(direction);
-			other.GetComponent(CharacterActionController).ApplyFlinch(direction);
+			var direction = (diffx >= 0? 1: -1);
+			var flinchDuration = calc.CalculateFlinchDuration(holderStats.GetImpact(), defenderStats.GetResilience());
+			
+			//Debug.Log(dmg);
+			//Debug.Log(flinchDuration);
+			
+			other.GetComponent(CharacterActionController).ApplyKnockback(direction);
+			other.GetComponent(CharacterActionController).ApplyFlinch(flinchDuration);
 			
 			holderAttackCfg.timeOfLastHit = Time.time;
 		}

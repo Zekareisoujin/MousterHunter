@@ -32,7 +32,7 @@ class CharacterHorizontalMovementConfiguration {
 	var deceleration = -25.0;
 	
 	// Direction according to button pressed
-	var controlledDirection = Vector3.right;
+	var facingDirection = Vector3.right;
 	
 	// Actual moving direction
 	var movingDirection = 0;
@@ -113,6 +113,10 @@ function Start () {
 	controller = GetComponent(CharacterController);
 }
 
+function UpdateStatus() {
+	currentState.isFlinching = (Time.time < currentState.flinchDurationEnd);
+}
+
 // Handles attack action
 function UpdateAttack() {
 	if (inputController.attackCommand && !currentState.isAttacking && !currentState.isFlinching){
@@ -158,10 +162,11 @@ function UpdateGroundMovement() {
 	//var h = Input.GetAxisRaw ("Horizontal");
 	var h = inputController.horizontalAxisRaw;
 
-	groundMovement.isBeingMoved = Mathf.Abs (h) > 0.1;
+	// Whether the character is being controlled / allowed to be controlled
+	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && !currentState.isFlinching);
 	
 	if (groundMovement.walkSpeed == 0)
-		groundMovement.movingDirection = groundMovement.controlledDirection.x;
+		groundMovement.movingDirection = groundMovement.facingDirection.x;
 	else
 		groundMovement.movingDirection = Mathf.Abs(groundMovement.walkSpeed) / groundMovement.walkSpeed;
 
@@ -170,16 +175,15 @@ function UpdateGroundMovement() {
 		
 			if (!currentState.isAttacking){
 				if (h > 0)
-					groundMovement.controlledDirection = Vector3.right;
+					groundMovement.facingDirection = Vector3.right;
 				else if (h < 0)
-					groundMovement.controlledDirection = Vector3.left;
+					groundMovement.facingDirection = Vector3.left;
 					
-				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.controlledDirection.x;
+				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.facingDirection.x;
 				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);			
 				groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, -groundMovement.maxWalkSpeed);
 			}
 		}else {
-			//groundMovement.controlledDirection = Vector3.zero;
 			if (controller.isGrounded)
 				groundMovement.walkSpeed += groundMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
 			else
@@ -212,7 +216,9 @@ function UpdateAirMovement() {
 }
 
 function UpdateAnimation() {
-	if (!currentState.isAttacking){
+	if (currentState.isFlinching)
+		animation.CrossFade("flinch");
+	else if (!currentState.isAttacking){
 		if (!controller.isGrounded){
 			if (airMovement.airSpeed >= 0)
 				animation.CrossFade("jump");
@@ -229,9 +235,13 @@ function UpdateAnimation() {
 }
 
 function Update () {
+	// Check status first
+	UpdateStatus();
+
 	// Apply attack if possible
 	UpdateAttack();
 	
+	// Or skills
 	UpdateSkill();
 	
 	// Update acceleration according to button pressed
@@ -251,27 +261,34 @@ function Update () {
 	controller.Move(displacement);
 				
 	// Update facing direction	
-	if (groundMovement.controlledDirection != Vector3.zero)
-		transform.rotation = Quaternion.LookRotation (groundMovement.controlledDirection);
+	if (groundMovement.facingDirection != Vector3.zero)
+		transform.rotation = Quaternion.LookRotation (groundMovement.facingDirection);
 		
 	UpdateAnimation();
 }
 
-function ApplyFlinch(direction) {
-	currentState.isFlinching = true;
+function ApplyKnockback(direction) {
+	//currentState.isFlinching = true;
 	groundMovement.walkSpeed = groundMovement.hFlinchRate * direction;
 	airMovement.airSpeed = airMovement.vFlinchRate;
-	groundMovement.controlledDirection = Vector3(-direction,0,0);
-	animation.CrossFade("flinch");
+	groundMovement.facingDirection = Vector3(-direction,0,0);
+	//animation.CrossFade("flinch");
 	
 	// Flinch for a fixed duration of 0.5s now
-	StartCoroutine(WaitUntilFlinchEnd(0.5));
+	//StartCoroutine(WaitUntilFlinchEnd(0.5));
 }
 
-function WaitUntilFlinchEnd(time) {
+function ApplyFlinch(duration) {
+	currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
+	
+	currentState.isAttacking = false;
+	attackActionCfg.isArmed = false;
+}
+
+/*function WaitUntilFlinchEnd(time) {
 	yield WaitForSeconds(time);
 	//Debug.Log("attack finishes: " + Time.time);
 	currentState.isFlinching = false;
-}
+}*/
 
 @script RequireComponent(CharacterController)
