@@ -175,7 +175,7 @@ function UpdateGroundMovement() {
 	var h = inputController.horizontalAxisRaw;
 
 	// Whether the character is being controlled / allowed to be controlled
-	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && currentState.isControllable);
+	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && currentState.isControllable && !currentState.isAttacking);
 	
 	if (groundMovement.walkSpeed == 0)
 		groundMovement.movingDirection = groundMovement.facingDirection.x;

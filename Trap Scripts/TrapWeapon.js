@@ -38,6 +38,6 @@ function CheckHit(other : Collider) {
 	}
 }
 
-function OnTriggerStay (other : Collider) {
+function OnTriggerEnter (other : Collider) {
 	CheckHit(other);
 }

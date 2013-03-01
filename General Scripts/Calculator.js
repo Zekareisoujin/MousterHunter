@@ -1,7 +1,7 @@
 class Calculator {
 	static var calc : Calculator;
 	
-	var baseFlinchDuration = 0.3;
+	private var baseFlinchDuration = 0.3;
 	
 	function Calculator() {
 	}

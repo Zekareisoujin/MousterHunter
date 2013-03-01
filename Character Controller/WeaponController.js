@@ -16,6 +16,7 @@ function Start () {
 function CheckHit(other : Collider) {
 	//Debug.Log("touched " + other);
 	var defenderStats = other.GetComponent(CharacterStatus);
+	var defenderController = other.GetComponent(CharacterActionController);
 	
 	if (defenderStats != null) {
 		if (holderAttackCfg.isArmed) {
@@ -33,8 +34,10 @@ function CheckHit(other : Collider) {
 			//Debug.Log(dmg);
 			//Debug.Log(flinchDuration);
 			
-			other.GetComponent(CharacterActionController).ApplyKnockback(direction);
-			other.GetComponent(CharacterActionController).ApplyFlinch(flinchDuration);
+			if (defenderController != null) {
+				defenderController.ApplyKnockback(direction);
+				defenderController.ApplyFlinch(flinchDuration);
+			}
 			
 			holderAttackCfg.timeOfLastHit = Time.time;
 		}
