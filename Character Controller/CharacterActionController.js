@@ -1,7 +1,16 @@
 
-private var controller;
+protected var controller;
+
+protected var rm : ResourceManager;
+
+var characterType : String;
 
 var deathEffect : GameObject;
+
+// Action variable
+protected var actionList;
+
+protected var actionGraph;
 
 // Temporary
 var isFocused = false;
@@ -15,7 +24,7 @@ class CharacterStates {
 	var isGrounded = false;
 	
 	// Show if character is in the motion of attacking. In this case, movement inputs are disabled
-	var isAttacking = false;
+	var isActing = false;
 	
 	// If flinched, you can't do anything
 	var isFlinching = false;
@@ -98,30 +107,58 @@ class InputController {
 	
 	var attackCommand = false;
 	
-	var skill_1 = false;
+	var skill1 = false;
 	
-	var skill_2 = false;
+	var skill2 = false;
 	
-	var skill_3 = false;
+	var skill3 = false;
 }
 
 var inputController : InputController;
 
-class AttackActionConfiguration {
+class ActionConfiguration {
 	// Check when attack collision is on
 	var isArmed = false;
 	
 	// To check when the next armed frame is on
 	var timeOfLastHit = 0.0;
+	
+	// Determine if action command (attack, skills, etc..) are being issued
+	var actionCommand = false;
+	
+	// Check if performing action
+	var isPerformingAction = false;
+	
+	// Time window that allows for chaining skills
+	var chainPeriod = 0.2;
+	var chainEnd = 0.0;
+	
+	// Current action in chain, -1 denotes not in action yet
+	var currentAction = -1;
+	// Input being pressed
+	var orderedAction = -1;
+	
+	// Length of chain
+	var chainCapacityCurrent = 0;
+	var chainCapacityMax = 6;
 }
 
-var attackActionCfg : AttackActionConfiguration;
+var actionCfg : ActionConfiguration;
 
-function Start () {
-	var run = animation["run"];
-	run.speed *= animationCfg.walkingSpeedModifier;
+function Start() {
+	rm = ResourceManager().GetResourceManager();
 	
 	controller = GetComponent(CharacterController);
+	if (characterType != ""){
+		actionList = rm.GetActionList()[characterType];
+		actionGraph = rm.GetActionGraph()[characterType];
+	}
+	
+	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
+	
+	// Experimental
+	var run = animation["run"];
+	run.speed *= animationCfg.walkingSpeedModifier;
 }
 
 function UpdateStatus() {
@@ -131,42 +168,87 @@ function UpdateStatus() {
 
 // Handles attack action
 function UpdateAttack() {
-	if (inputController.attackCommand && !currentState.isAttacking && currentState.isControllable){
-		currentState.isAttacking = true;
+	/*if (inputController.attackCommand && !currentState.isActing && currentState.isControllable){
+		currentState.isActing = true;
 		
 		animation.CrossFade("attack");
-		attackActionCfg.timeOfLastHit = 0;
+		actionCfg.timeOfLastHit = 0;
 		//Debug.Log("attack start: " + Time.time);
 		StartCoroutine(WaitForAnimation(animation["attack"].length));
+	}*/
+	
+	if (actionCfg.orderedAction >= 0 && currentState.isControllable) {
+		currentState.isActing = true;
+		
+		if (!actionCfg.isPerformingAction) {
+			if ( actionCfg.currentAction == -1 || (Time.time <= actionCfg.chainEnd && actionGraph[actionCfg.currentAction][actionCfg.orderedAction] != -1) ){
+				var nextAction;
+				if (actionCfg.currentAction == -1)
+					actionCfg.currentAction = actionCfg.orderedAction;
+				else
+					actionCfg.currentAction = actionGraph[actionCfg.currentAction][actionCfg.orderedAction];
+				nextAction = actionList[actionCfg.currentAction];
+					
+				if (nextAction.chainCost <= actionCfg.chainCapacityCurrent) {
+					actionCfg.chainCapacityCurrent -= nextAction.chainCost;
+					//Debug.Log(nextAction.name);
+					animation.CrossFade(nextAction.animationStart);
+					actionCfg.isPerformingAction = true;
+					
+					groundMovement.walkSpeed += nextAction.movement.x * groundMovement.facingDirection.x;
+					airMovement.airSpeed += nextAction.movement.y;
+					
+					StartCoroutine(WaitForActionEnd(nextAction, animation[nextAction.animationStart].length));
+				}
+			}
+		}
 	}
 	
-	if (currentState.isAttacking) {
+	if (currentState.isActing) {
 		// Update attack frequency
-		attackActionCfg.isArmed = (Time.time - GetComponent(CharacterStatus).attackFrequency >= attackActionCfg.timeOfLastHit);
+		actionCfg.isArmed = (Time.time - GetComponent(CharacterStatus).attackFrequency >= actionCfg.timeOfLastHit);
 	} else
-		attackActionCfg.isArmed = false;
+		actionCfg.isArmed = false;
+}
+
+function WaitForActionEnd(action, length) {
+	yield WaitForSeconds(length);
+	
+	actionCfg.isPerformingAction = false;
+	actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
+	animation.CrossFade(action.animationRecovery);
+	StartCoroutine(WaitForActionRecoverEnd(length));
+}
+
+function WaitForActionRecoverEnd(length) {
+	yield WaitForSeconds(length);
+	
+	if (!actionCfg.isPerformingAction){
+		currentState.isActing = false;
+		actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
+		actionCfg.currentAction = -1;
+	}
 }
 
 function UpdateSkill()
 {
-	if(inputController.skill_1)
-	{
-		Debug.Log("skill 1");
-	}
-	if(inputController.skill_2)
-	{
-		Debug.Log("skill 2");
-	}
-	if(inputController.skill_3)
-	{
-		Debug.Log("skill 3");
-	}}
+	if (inputController.attackCommand)
+		actionCfg.orderedAction = 0;
+	else if (inputController.skill1)
+		actionCfg.orderedAction = 2;
+	else if (inputController.skill2)
+		actionCfg.orderedAction = 3;
+	else if (inputController.skill3)
+		actionCfg.orderedAction = 4;
+	else
+		actionCfg.orderedAction = -1;
+}
 
 // Helper function
 function WaitForAnimation(time) {
 	yield WaitForSeconds(time);
 	//Debug.Log("attack finishes: " + Time.time);
-	currentState.isAttacking = false;
+	currentState.isActing = false;
 }
 
 // Handles ground movement
@@ -175,7 +257,7 @@ function UpdateGroundMovement() {
 	var h = inputController.horizontalAxisRaw;
 
 	// Whether the character is being controlled / allowed to be controlled
-	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && currentState.isControllable && !currentState.isAttacking);
+	groundMovement.isBeingMoved = ( Mathf.Abs (h) > 0.1 && currentState.isControllable && !currentState.isActing);
 	
 	if (groundMovement.walkSpeed == 0)
 		groundMovement.movingDirection = groundMovement.facingDirection.x;
@@ -185,7 +267,7 @@ function UpdateGroundMovement() {
 	if (controller.isGrounded){
 		if (groundMovement.isBeingMoved){
 		
-			if (!currentState.isAttacking){
+			if (!currentState.isActing){
 				if (h > 0)
 					groundMovement.facingDirection = Vector3.right;
 				else if (h < 0)
@@ -215,7 +297,7 @@ function UpdateGroundMovement() {
 
 function UpdateAirMovement() {
 	// Apply jumping logic - initial jumping force
-	if (controller.isGrounded && inputController.jumpCommand)
+	if (controller.isGrounded && inputController.jumpCommand && !currentState.isActing)
 		airMovement.airSpeed += airMovement.initialSpeed;
 		
 	// Apply gravity if character is not grounded
@@ -231,7 +313,7 @@ function UpdateAnimation() {
 	if (!currentState.isDead) {
 		if (currentState.isFlinching)
 			animation.CrossFade("flinch");
-		else if (!currentState.isAttacking){
+		else if (!currentState.isActing){
 			if (!controller.isGrounded){
 				if (airMovement.airSpeed >= 0)
 					animation.CrossFade("jump");
@@ -252,11 +334,11 @@ function Update () {
 	// Check status first
 	UpdateStatus();
 
-	// Apply attack if possible
-	UpdateAttack();
-	
 	// Or skills
 	UpdateSkill();
+	
+	// Apply attack if possible
+	UpdateAttack();
 	
 	// Update acceleration according to button pressed
 	UpdateGroundMovement();
@@ -294,8 +376,8 @@ function ApplyFlinch(duration) {
 	if (!currentState.isDead) {
 		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
 		
-		currentState.isAttacking = false;
-		attackActionCfg.isArmed = false;
+		currentState.isActing = false;
+		actionCfg.isArmed = false;
 	}
 }
 
@@ -303,8 +385,8 @@ function ApplyDeath() {
 	if (!currentState.isDead) {
 		currentState.isDead = true;
 		currentState.isFlinching = false;
-		currentState.isAttacking = false;
-		attackActionCfg.isArmed = false;
+		currentState.isActing = false;
+		actionCfg.isArmed = false;
 		animation.CrossFade("death");
 		StartCoroutine(DeathEffect());
 	}

@@ -6,7 +6,7 @@ var theParent : Transform;
 var calc : Calculator;
 
 function Start () {
-	holderAttackCfg = theParent.GetComponent(CharacterActionController).attackActionCfg;
+	holderAttackCfg = theParent.GetComponent(CharacterActionController).actionCfg;
 	holderStats = theParent.GetComponent(CharacterStatus);
 	calc = Calculator.GetCalculator();
 	
