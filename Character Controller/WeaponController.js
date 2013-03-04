@@ -1,49 +1,64 @@
-var holderAttackCfg;
-var holderStats;
-
-var theParent : Transform;
+var parent : Transform;
 
 var calc : Calculator;
 
+var armStart : float;
+var armEnd	 : float;
+
+var attack	: float;
+var impact 	: float;
+var knockback : Vector3;
+
+var oldTarget : Array;
+
 function Start () {
-	holderAttackCfg = theParent.GetComponent(CharacterActionController).actionCfg;
-	holderStats = theParent.GetComponent(CharacterStatus);
 	calc = Calculator.GetCalculator();
+	Physics.IgnoreCollision(collider, parent.collider);
+	oldTarget = new Array();
 	
-	Physics.IgnoreCollision(collider, theParent.collider);
+	armStart = armEnd = 0;
+}
+
+function SetWeaponArm(armStart, armEnd, attack, impact, knockback) {
+	this.armStart 	= armStart;
+	this.armEnd 	= armEnd;
+	this.attack 	= attack;
+	this.impact 	= impact;
+	this.knockback 	= knockback;
+	oldTarget.Clear();
 }
 
 function CheckHit(other : Collider) {
-	//Debug.Log("touched " + other);
 	var defenderStats = other.GetComponent(CharacterStatus);
 	var defenderController = other.GetComponent(CharacterActionController);
 	
-	if (defenderStats != null) {
-		if (holderAttackCfg.isArmed) {
-			//Debug.Log("really hit");
-			
-			// Apply damage:
-			var dmg = calc.CalculateDamage(holderStats.GetAttackPower(), defenderStats.GetDefensePower());
-			defenderStats.ApplyDamage(dmg);
-			
-			// Apply flinch, flinching direction is based on relative positions of the weapon at the moment
-			var diffx = other.transform.position.x - transform.parent.position.x;
+	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other)){
+		if (Time.time < armEnd && Time.time > armStart) {
+			// Calculation:
+			var dmg = calc.CalculateDamage(attack, defenderStats.GetDefensePower());
+			var flinch = calc.CalculateFlinchDuration(impact, defenderStats.GetResilience());
+			var diffx = other.transform.position.x - parent.transform.position.x;
 			var direction = (diffx >= 0? 1: -1);
-			var flinchDuration = calc.CalculateFlinchDuration(holderStats.GetImpact(), defenderStats.GetResilience());
 			
-			//Debug.Log(dmg);
-			//Debug.Log(flinchDuration);
+			// Apply effects:
+			other.SendMessage("ApplyDamage", dmg);
+			other.SendMessage("ApplyFlinch", flinch);
+			defenderController.ApplyKnockback(direction, knockback);
 			
-			if (defenderController != null) {
-				defenderController.ApplyKnockback(direction);
-				defenderController.ApplyFlinch(flinchDuration);
-			}
-			
-			holderAttackCfg.timeOfLastHit = Time.time;
+			oldTarget.Add(other);
 		}
 	}
 }
 
 function OnTriggerStay (other : Collider) {
 	CheckHit(other);
+}
+
+// Helper functions.. possibly have to write my own array class
+function Contains(arr : Array, elem) : boolean {
+	var i;
+	for (i=0; i<arr.length; i++) {
+		if (arr[i].GetInstanceID() == elem.GetInstanceID()) return true;
+	}
+	return false;
 }

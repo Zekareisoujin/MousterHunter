@@ -1,11 +1,15 @@
 
-protected var controller;
-
 protected var rm : ResourceManager;
 
 var characterType : String;
 
-var deathEffect : GameObject;
+var permanentWeapon : GameObject;
+var deathEffect 	: GameObject;
+
+// Other components:
+protected var controller;
+protected var stats;
+protected var weapon;
 
 // Action variable
 protected var actionList;
@@ -32,6 +36,9 @@ class CharacterStates {
 	
 	// When life drop below 0
 	var isDead = false;
+	
+	// Determines if character takes damage from attack at all
+	var invulnerable = false;
 }
 
 var currentState : CharacterStates;
@@ -149,6 +156,10 @@ function Start() {
 	rm = ResourceManager().GetResourceManager();
 	
 	controller = GetComponent(CharacterController);
+	stats = GetComponent(CharacterStatus);
+	
+	if (permanentWeapon != null)
+		weapon = permanentWeapon.GetComponent(WeaponController);
 	if (characterType != ""){
 		actionList = rm.GetActionList()[characterType];
 		actionGraph = rm.GetActionGraph()[characterType];
@@ -168,15 +179,6 @@ function UpdateStatus() {
 
 // Handles attack action
 function UpdateAttack() {
-	/*if (inputController.attackCommand && !currentState.isActing && currentState.isControllable){
-		currentState.isActing = true;
-		
-		animation.CrossFade("attack");
-		actionCfg.timeOfLastHit = 0;
-		//Debug.Log("attack start: " + Time.time);
-		StartCoroutine(WaitForAnimation(animation["attack"].length));
-	}*/
-	
 	if (actionCfg.orderedAction >= 0 && currentState.isControllable) {
 		currentState.isActing = true;
 		
@@ -198,7 +200,13 @@ function UpdateAttack() {
 					groundMovement.walkSpeed += nextAction.movement.x * groundMovement.facingDirection.x;
 					airMovement.airSpeed += nextAction.movement.y;
 					
-					StartCoroutine(WaitForActionEnd(nextAction, animation[nextAction.animationStart].length));
+					var duration = animation[nextAction.animationStart].length;
+					var delay = nextAction.armDelay;
+					
+					if (weapon != null)
+						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, stats.GetAttackPower() * nextAction.power, stats.GetImpact() * nextAction.impact, nextAction.knockback);
+					
+					StartCoroutine(WaitForActionEnd(nextAction, duration));
 				}
 			}
 		}
@@ -364,10 +372,10 @@ function Update () {
 	UpdateAnimation();
 }
 
-function ApplyKnockback(direction) {
+function ApplyKnockback(direction, knockback) {
 	if (!currentState.isDead) {
-		groundMovement.walkSpeed = groundMovement.hFlinchRate * direction;
-		airMovement.airSpeed = airMovement.vFlinchRate;
+		groundMovement.walkSpeed = knockback.x * direction;
+		airMovement.airSpeed = knockback.y;
 		groundMovement.facingDirection = Vector3(-direction,0,0);
 	}
 }
@@ -406,3 +414,4 @@ function DeathEffect() {
 
 @script RequireComponent(CharacterController)
 @script RequireComponent(Rigidbody)
+@script RequireComponent(CharacterStatus);

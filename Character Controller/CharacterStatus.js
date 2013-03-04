@@ -69,7 +69,7 @@ function ApplyDamage(dmg) {
 	currentLife -= dmg;
 	if (currentLife <= 0){
 		currentLife = 0;
-		SendMessage("ApplyDeath");
+		SendMessage("ApplyDeath", SendMessageOptions.DontRequireReceiver);
 	}
 	
 	if (lifeBarScript != null){
