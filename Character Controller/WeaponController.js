@@ -39,6 +39,7 @@ function CheckHit(other : Collider) {
 			var flinch = calc.CalculateFlinchDuration(impact, defenderStats.GetResilience());
 			var diffx = other.transform.position.x - parent.transform.position.x;
 			var direction = (diffx >= 0? 1: -1);
+			//Debug.Log(dmg);
 			
 			// Apply effects:
 			other.SendMessage("ApplyDamage", dmg);

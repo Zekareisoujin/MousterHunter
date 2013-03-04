@@ -4,6 +4,8 @@ class ResourceManager {
 	private static var ActionList : Hashtable;
 	private static var ActionGraph : Hashtable;
 	
+	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50];
+	
 	function ResourceManager() {
 		InitializeActionList();
 		InitializeActionGraph();
@@ -73,5 +75,9 @@ class ResourceManager {
 	
 	function GetActionGraph(){
 		return ActionGraph;
+	}
+	
+	function GetChainMultiplier(){
+		return chainMultiplier;
 	}
 }

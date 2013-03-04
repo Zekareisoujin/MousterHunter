@@ -148,6 +148,8 @@ class ActionConfiguration {
 	// Length of chain
 	var chainCapacityCurrent = 0;
 	var chainCapacityMax = 6;
+	var chainLength = 0;
+	var chainMultiplier;
 }
 
 var actionCfg : ActionConfiguration;
@@ -166,6 +168,7 @@ function Start() {
 	}
 	
 	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
+	actionCfg.chainMultiplier = rm.GetChainMultiplier();
 	
 	// Experimental
 	var run = animation["run"];
@@ -202,9 +205,10 @@ function UpdateAttack() {
 					
 					var duration = animation[nextAction.animationStart].length;
 					var delay = nextAction.armDelay;
+					var boostedAttack = stats.GetAttackPower() * nextAction.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
 					
 					if (weapon != null)
-						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, stats.GetAttackPower() * nextAction.power, stats.GetImpact() * nextAction.impact, nextAction.knockback);
+						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * nextAction.impact, nextAction.knockback);
 					
 					StartCoroutine(WaitForActionEnd(nextAction, duration));
 				}
@@ -235,6 +239,7 @@ function WaitForActionRecoverEnd(length) {
 		currentState.isActing = false;
 		actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
 		actionCfg.currentAction = -1;
+		actionCfg.chainLength = 0;
 	}
 }
 
