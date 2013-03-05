@@ -5,6 +5,7 @@ var characterType : String;
 
 var permanentWeapon : GameObject;
 var deathEffect 	: GameObject;
+var floatingText 	: GameObject;
 
 // Other components:
 protected var controller;
@@ -206,7 +207,7 @@ function UpdateAttack() {
 					var duration = animation[nextAction.animationStart].length;
 					var delay = nextAction.armDelay;
 					var boostedAttack = stats.GetAttackPower() * nextAction.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
-					
+			
 					if (weapon != null)
 						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * nextAction.impact, nextAction.knockback);
 					
@@ -415,6 +416,12 @@ function DeathEffect() {
 	// Temporary
 	if (isFocused)
 		GameObject.Find("Main Camera").GetComponent(CameraFocus).enabled = false;
+}
+
+function ShowFloatingText(displayText) {
+	var floatText = Instantiate(floatingText, transform.position, Quaternion.identity);
+	floatText.GetComponent(GUIFloatingText).SetText(displayText);
+	Destroy(floatText, 5);
 }
 
 @script RequireComponent(CharacterController)

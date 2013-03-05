@@ -11,10 +11,16 @@ var knockback : Vector3;
 
 var oldTarget : Array;
 
+var trailEmitterBase : GameObject;
+var trailEmitter;
+
 function Start () {
 	calc = Calculator.GetCalculator();
 	Physics.IgnoreCollision(collider, parent.collider);
 	oldTarget = new Array();
+	
+	if (trailEmitterBase != null) 
+		trailEmitter = trailEmitterBase.GetComponent("MeleeWeaponTrail");
 	
 	armStart = armEnd = 0;
 }
@@ -49,6 +55,7 @@ function CheckHit(other : Collider) {
 			oldTarget.Add(other);
 		}
 	}
+	
 }
 
 function OnTriggerStay (other : Collider) {
@@ -62,4 +69,9 @@ function Contains(arr : Array, elem) : boolean {
 		if (arr[i].GetInstanceID() == elem.GetInstanceID()) return true;
 	}
 	return false;
+}
+
+function Update() {
+	if (trailEmitter != null)
+	trailEmitter.Emit = (Time.time < armEnd && Time.time > armStart);
 }

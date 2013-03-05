@@ -70,6 +70,9 @@ function ApplyDamage(dmg) {
 	if (currentLife <= 0){
 		currentLife = 0;
 		SendMessage("ApplyDeath", SendMessageOptions.DontRequireReceiver);
+	} else {
+		var roundDmg = Mathf.Round(dmg);
+		SendMessage("ShowFloatingText", roundDmg.ToString(), SendMessageOptions.DontRequireReceiver);
 	}
 	
 	if (lifeBarScript != null){
