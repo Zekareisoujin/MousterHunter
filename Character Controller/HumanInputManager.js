@@ -11,5 +11,5 @@ function Update () {
 	controller.skill1 = Input.GetAxis("Vertical")<0 && Input.GetButton("Fire2");
 	controller.skill2 = Input.GetAxis("Vertical")>0 && Input.GetButton("Fire2");
 	controller.skill3 = Input.GetButton("Horizontal") && Input.GetButton("Fire2");
-	
+	controller.skill4 = Input.GetButton("Fire2");
 }

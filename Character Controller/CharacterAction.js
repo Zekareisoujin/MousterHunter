@@ -22,6 +22,9 @@ class CharacterAction {
 	// Knockback vector
 	var knockback	: Vector3;
 	
+	// Extra specific effect
+	var keepMomentum : boolean;
+	
 	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armDelay){
 		this.name = name;
 		this.power = power;
@@ -32,5 +35,7 @@ class CharacterAction {
 		this.armDelay = armDelay;
 		movement = Vector3.zero;
 		knockback = Vector3.zero;
+		
+		keepMomentum = false;
 	}
 }

@@ -71,8 +71,8 @@ class CharacterHorizontalMovementConfiguration {
 	// Flag to actually check if the character is moving, by checking horizontal speed
 	var isMoving = false;
 	
-	// Horizontal knockback velocity while flinched
-	var hFlinchRate = 2.0;
+	// Friction settings, no friction means no deceleration
+	var hasFriction = true;
 }
 
 var groundMovement : CharacterHorizontalMovementConfiguration;
@@ -93,9 +93,6 @@ class CharacterVerticalMovementConfiguration {
 	
 	// Horizontal deceleration while airborne
 	var deceleration = -1.0;
-	
-	// Vertical knockback velocity while flinched
-	var vFlinchRate = 2.0;
 }
 
 var airMovement : CharacterVerticalMovementConfiguration;
@@ -120,6 +117,8 @@ class InputController {
 	var skill2 = false;
 	
 	var skill3 = false;
+	
+	var skill4 = false;
 }
 
 var inputController : InputController;
@@ -203,6 +202,10 @@ function UpdateAttack() {
 					
 					groundMovement.walkSpeed += nextAction.movement.x * groundMovement.facingDirection.x;
 					airMovement.airSpeed += nextAction.movement.y;
+					if (nextAction.keepMomentum) {
+						groundMovement.hasFriction = false;
+						groundMovement.walkSpeed = Mathf.Min(nextAction.movement.x, groundMovement.walkSpeed);
+					}
 					
 					var duration = animation[nextAction.animationStart].length;
 					var delay = nextAction.armDelay;
@@ -230,6 +233,7 @@ function WaitForActionEnd(action, length) {
 	actionCfg.isPerformingAction = false;
 	actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
 	animation.CrossFade(action.animationRecovery);
+	groundMovement.hasFriction = true;
 	StartCoroutine(WaitForActionRecoverEnd(length));
 }
 
@@ -254,6 +258,8 @@ function UpdateSkill()
 		actionCfg.orderedAction = 3;
 	else if (inputController.skill3)
 		actionCfg.orderedAction = 4;
+	else if (inputController.skill4)
+		actionCfg.orderedAction = 5;
 	else
 		actionCfg.orderedAction = -1;
 }
@@ -288,21 +294,22 @@ function UpdateGroundMovement() {
 					groundMovement.facingDirection = Vector3.left;
 					
 				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.facingDirection.x;
-				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);			
-				groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, -groundMovement.maxWalkSpeed);
+				
 			}
 		}else {
-			if (controller.isGrounded)
+			if (controller.isGrounded && groundMovement.hasFriction)
 				groundMovement.walkSpeed += groundMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
 			else
 				groundMovement.walkSpeed -= airMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
-			
-			if (groundMovement.movingDirection > 0)
-				groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
-			else if (groundMovement.movingDirection < 0)
-				groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, 0);
-			
+
 		}
+		
+		groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, groundMovement.maxWalkSpeed);			
+		groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, -groundMovement.maxWalkSpeed);
+		if (groundMovement.movingDirection > 0)
+			groundMovement.walkSpeed = Mathf.Max(groundMovement.walkSpeed, 0);
+		else if (groundMovement.movingDirection < 0)
+			groundMovement.walkSpeed = Mathf.Min(groundMovement.walkSpeed, 0);
 	}
 	
 	groundMovement.isMoving = (groundMovement.walkSpeed == 0?false:true);
@@ -325,9 +332,9 @@ function UpdateAirMovement() {
 
 function UpdateAnimation() {
 	if (!currentState.isDead) {
-		if (currentState.isFlinching)
-			animation.CrossFade("flinch");
-		else if (!currentState.isActing){
+		if (currentState.isFlinching) {
+			//animation.CrossFade("flinch");
+		} else if (!currentState.isActing){
 			if (!controller.isGrounded){
 				if (airMovement.airSpeed >= 0)
 					animation.CrossFade("jump");
@@ -338,7 +345,7 @@ function UpdateAnimation() {
 				if (groundMovement.isMoving)
 					animation.CrossFade("run");
 				else
-					animation.CrossFade("idle", 1.0);
+					animation.CrossFade("idle");
 			}
 		}
 	}
@@ -388,10 +395,12 @@ function ApplyKnockback(direction, knockback) {
 
 function ApplyFlinch(duration) {
 	if (!currentState.isDead) {
+		//Debug.Log(duration);
 		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
 		
 		currentState.isActing = false;
 		actionCfg.isArmed = false;
+		animation.CrossFade("flinch", duration);
 	}
 }
 
