@@ -215,6 +215,10 @@ function UpdateAttack() {
 						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * nextAction.impact, nextAction.knockback);
 					
 					StartCoroutine(WaitForActionEnd(nextAction, duration));
+					
+					if (nextAction.extraEffect) 
+						StartCoroutine(SpawnEffect(nextAction, nextAction.effectDelay));
+					
 				}
 			}
 		}
@@ -225,6 +229,15 @@ function UpdateAttack() {
 		actionCfg.isArmed = (Time.time - GetComponent(CharacterStatus).attackFrequency >= actionCfg.timeOfLastHit);
 	} else
 		actionCfg.isArmed = false;
+}
+
+function SpawnEffect(action, delay) {
+	yield WaitForSeconds(delay);
+	
+	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
+	var effectScript = effect.GetComponent(GeneralEffectScript);
+	effectScript.SetParent(this.transform);
+	effectScript.SetEffectArm(stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++], stats.GetImpact() * action.impact, action.knockback);
 }
 
 function WaitForActionEnd(action, length) {

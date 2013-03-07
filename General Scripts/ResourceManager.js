@@ -1,12 +1,14 @@
 class ResourceManager {
 	static var rm: ResourceManager;
 	
+	private static var erm : EffectResourceManager;
 	private static var ActionList : Hashtable;
 	private static var ActionGraph : Hashtable;
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50];
 	
 	function ResourceManager() {
+		//erm = EffectResourceManager().GetEffectResourceManager();
 		InitializeActionList();
 		InitializeActionGraph();
 	}
@@ -33,6 +35,7 @@ class ResourceManager {
 		var wwind	= new CharacterAction("Whirlwind", 0.75, 1.5, 1, "spin", "spinRecover", 0.02);
 		smash.movement 	= Vector3(2.0, 10.0, 0);
 		smash.knockback = Vector3(3.0, 3.0, 0);
+		smash.AddEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
 		spin.knockback 	= Vector3(1.0, 0, 0);
 		thrust.movement = Vector3(10.0, 0, 0);
 		thrust.knockback = Vector3(2.0, 0, 0);
@@ -48,15 +51,23 @@ class ResourceManager {
 		warriorActionList.Add(thrust);
 		warriorActionList.Add(wwind);
 		
+		// Archer-specific skills
+		var shoot	= new CharacterAction("Ranged Attack", 1.0, 1.0, 1, "attack", "attackRecover", 0.05);
+		shoot.AddEffect("ArcherArrow", "root/spine/chest/shoulder_r/elbow_r/wrist_r/arrowSpawn", 0.0);
+		
 		var soldierActionList = new Array();
 		soldierActionList.Add(actionAttack);
 		
 		var bruteActionList = new Array();
 		bruteActionList.Add(actionAttack);
 		
+		var archerActionList = new Array();
+		archerActionList.Add(shoot);
+		
 		ActionList.Add("Warrior", warriorActionList);
 		ActionList.Add("Soldier", soldierActionList);
 		ActionList.Add("Brute", bruteActionList);
+		ActionList.Add("Archer", archerActionList);
 	}
 	
 	function InitializeActionGraph() {
@@ -73,6 +84,7 @@ class ResourceManager {
 		var enemyGraph = [ [ -1 ] ];
 		ActionGraph.Add("Soldier", enemyGraph);
 		ActionGraph.Add("Brute", enemyGraph);
+		ActionGraph.Add("Archer", enemyGraph);
 	}
 	
 	function GetActionList(){

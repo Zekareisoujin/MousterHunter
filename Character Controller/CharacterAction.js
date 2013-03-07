@@ -23,7 +23,13 @@ class CharacterAction {
 	var knockback	: Vector3;
 	
 	// Extra specific effect
-	var keepMomentum : boolean;
+	var keepMomentum 	: boolean;
+	
+	// For spawning extra effects:
+	var extraEffect 	: boolean;
+	var effectPath		: String;
+	var effectSpawnPoint: String;
+	var effectDelay		: float;
 	
 	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armDelay){
 		this.name = name;
@@ -37,5 +43,14 @@ class CharacterAction {
 		knockback = Vector3.zero;
 		
 		keepMomentum = false;
+		
+		extraEffect = false;
+	}
+	
+	function AddEffect(effectPath, effectSpawnPoint, effectDelay) {
+		this.extraEffect = true;
+		this.effectPath = effectPath;
+		this.effectSpawnPoint = effectSpawnPoint;
+		this.effectDelay = effectDelay;
 	}
 }

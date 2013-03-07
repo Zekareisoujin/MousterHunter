@@ -9,7 +9,7 @@ var attack	: float;
 var impact 	: float;
 var knockback : Vector3;
 
-var oldTarget : Array;
+var oldTarget : Array = new Array();
 
 var trailEmitterBase : GameObject;
 var trailEmitter;
@@ -17,7 +17,6 @@ var trailEmitter;
 function Start () {
 	calc = Calculator.GetCalculator();
 	Physics.IgnoreCollision(collider, parent.collider);
-	oldTarget = new Array();
 	
 	if (trailEmitterBase != null) 
 		trailEmitter = trailEmitterBase.GetComponent("MeleeWeaponTrail");
