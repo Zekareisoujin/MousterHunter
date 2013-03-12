@@ -52,6 +52,7 @@ function CheckHit(other : Collider) {
 			defenderController.ApplyKnockback(direction, knockback);
 			
 			oldTarget.Add(other);
+			
 		}
 	}
 	
@@ -59,6 +60,12 @@ function CheckHit(other : Collider) {
 
 function OnTriggerStay (other : Collider) {
 	CheckHit(other);
+}
+
+// Testing.. doesn't work
+function OnCollisionEnter (collision : Collision) {
+	Debug.Log("collided!");
+	CheckHit(collision.collider);
 }
 
 // Helper functions.. possibly have to write my own array class

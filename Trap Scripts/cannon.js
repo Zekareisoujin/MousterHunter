@@ -1,45 +1,54 @@
 #pragma strict
 
-var projectile : Rigidbody;
-var myTarget: Transform;
+var projectile : GameObject;
 
 var fireRate : float = 3.0;
 var projectileSpeed = 5;
 
+var velocity = Vector3(0.0, 3.0, 7.0);
+var gravity = -10;
+var direction = 0;
+
 private var lastShot = 0.0;
 private var shoot = true;
 
-function BallisticVel(target: Transform): Vector3 {
+private var trajectoryHeight = 5;	
 
-	var dir = target.position - transform.position; // get target direction
-	var h = dir.y;  // get height difference
-	dir.y = 0;  // retain only the horizontal direction
-	var dist = dir.magnitude ;  // get horizontal distance
-	dir.y = dist/3;  //set elevation to 1/3 of dist to reduce angle of projectile fired
-	dist += h;  // correct for different heights
-	var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude);
-	return vel * dir.normalized;  // returns Vector3 velocity
-}
+private var startPos = Vector3.zero;
+private var endPos = Vector3.zero;
+
+private var tmpVelocity = Vector3(0.0, 3.0, 7.0);
+
+private var clone : GameObject;
 
 function Start () {
-	
+	startPos = transform.Find("spawnPoint").transform.position;
 }
 
 function Update () {
-if(shoot)
+	if(shoot)
 	{
 		if(Time.time > fireRate+lastShot)
 		{
-			var clone : Rigidbody = Instantiate(projectile, transform.Find("spawnPoint").transform.position , transform.rotation);
-			clone.velocity = BallisticVel(myTarget);
+			clone = Instantiate(projectile, startPos , transform.rotation);
 			
-			clone.rigidbody.useGravity = true;
 			transform.Find("spawnPoint").Find("Explosion02").particleSystem.Play();
-			
+			clone.transform.rotation = transform.rotation;
+			var diffz = clone.transform.position.z - transform.position.z;
+			tmpVelocity = velocity;
+			direction = (diffz > 0? 1: -1);
+			tmpVelocity.z *= direction;
 			
 			lastShot = Time.time;
 			
-			Destroy(clone.gameObject, 3);
+			Destroy(clone.gameObject, fireRate-1);
 		}
-	}
+			
+		if(clone != null)
+		{
+			tmpVelocity.y += gravity * Time.deltaTime;
+			clone.transform.Translate(tmpVelocity*Time.deltaTime);	
+
+		}
+	}	
 }

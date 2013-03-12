@@ -14,8 +14,14 @@ protected var weapon;
 
 // Action variable
 protected var actionList;
-
 protected var actionGraph;
+
+// Control casting animation
+protected var prepareEffect;
+
+// Splatter effect point (being hit)
+protected var hitLocation = "root/hit";
+protected var hitEffectDuration = 0.3;
 
 // Temporary
 var isFocused = false;
@@ -197,68 +203,99 @@ function UpdateAttack() {
 				if (nextAction.chainCost <= actionCfg.chainCapacityCurrent) {
 					actionCfg.chainCapacityCurrent -= nextAction.chainCost;
 					//Debug.Log(nextAction.name);
-					animation.CrossFade(nextAction.animationStart);
 					actionCfg.isPerformingAction = true;
 					
-					groundMovement.walkSpeed += nextAction.movement.x * groundMovement.facingDirection.x;
-					airMovement.airSpeed += nextAction.movement.y;
-					if (nextAction.keepMomentum) {
-						groundMovement.hasFriction = false;
-						groundMovement.walkSpeed = Mathf.Min(nextAction.movement.x, groundMovement.walkSpeed);
+					if (nextAction.prepareEffect){
+						prepareEffect = Instantiate(Resources.Load(nextAction.preparePath), transform.Find(nextAction.prepareSpawnPoint).position, Quaternion.identity);
+						prepareEffect.transform.parent = transform;
 					}
 					
-					var duration = animation[nextAction.animationStart].length;
-					var delay = nextAction.armDelay;
-					var boostedAttack = stats.GetAttackPower() * nextAction.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
-			
-					if (weapon != null)
-						weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * nextAction.impact, nextAction.knockback);
-					
-					StartCoroutine(WaitForActionEnd(nextAction, duration));
-					
-					if (nextAction.extraEffect) 
-						StartCoroutine(SpawnEffect(nextAction, nextAction.effectDelay));
-					
+					StartCoroutine(WaitForActionPreparationEnd(nextAction, nextAction.prepareDuration));
 				}
 			}
 		}
 	}
 	
-	if (currentState.isActing) {
+	/*if (currentState.isActing) {
 		// Update attack frequency
 		actionCfg.isArmed = (Time.time - GetComponent(CharacterStatus).attackFrequency >= actionCfg.timeOfLastHit);
 	} else
-		actionCfg.isArmed = false;
+		actionCfg.isArmed = false;*/
 }
 
-function SpawnEffect(action, delay) {
-	yield WaitForSeconds(delay);
+function WaitForActionPreparationEnd(action, length) {
+	yield WaitForSeconds(length);
 	
-	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
-	var effectScript = effect.GetComponent(GeneralEffectScript);
-	effectScript.SetParent(this.transform);
-	effectScript.SetEffectArm(stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++], stats.GetImpact() * action.impact, action.knockback);
+	if (prepareEffect != null)
+		Destroy(prepareEffect);
+	
+	if (currentState.isActing) {
+		animation.CrossFade(action.animationStart);
+		
+		groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
+		airMovement.airSpeed += action.movement.y;
+		if (action.keepMomentum) {
+			groundMovement.hasFriction = false;
+			groundMovement.walkSpeed = Mathf.Min(action.movement.x, groundMovement.walkSpeed);
+		}
+		
+		var duration = animation[action.animationStart].length;
+		var delay = action.armDelay;
+		var boostedAttack = stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
+		var boostedImpact = stats.GetImpact() * action.impact;
+	
+		if (weapon != null)
+			weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+		
+		StartCoroutine(WaitForActionEnd(action, duration));
+		
+		if (action.extraEffect){
+			var effDelay = action.effectDelay;
+			if (action.effectDelay < 0)
+				effDelay = animation[action.animationStart].length;
+			
+			StartCoroutine(SpawnEffect(action, effDelay, boostedAttack, boostedImpact, action.knockback));
+		}
+	}
 }
 
 function WaitForActionEnd(action, length) {
 	yield WaitForSeconds(length);
 	
 	actionCfg.isPerformingAction = false;
-	actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
-	animation.CrossFade(action.animationRecovery);
-	groundMovement.hasFriction = true;
-	StartCoroutine(WaitForActionRecoverEnd(length));
+	if (currentState.isActing) {
+		actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
+		animation.CrossFade(action.animationRecovery);
+		groundMovement.hasFriction = true;
+		StartCoroutine(WaitForActionRecoverEnd(length));
+	}
 }
 
 function WaitForActionRecoverEnd(length) {
 	yield WaitForSeconds(length);
 	
-	if (!actionCfg.isPerformingAction){
-		currentState.isActing = false;
-		actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
-		actionCfg.currentAction = -1;
-		actionCfg.chainLength = 0;
-	}
+	if (!actionCfg.isPerformingAction)
+		ResetAction();
+}
+
+function ResetAction() {
+	if (prepareEffect != null)
+		Destroy(prepareEffect);
+	currentState.isActing = false;
+	actionCfg.isArmed = false;
+	actionCfg.isPerformingAction = false;
+	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
+	actionCfg.currentAction = -1;
+	actionCfg.chainLength = 0;
+}
+
+function SpawnEffect(action, delay, effAttack, effImpact, effKnockback) {
+	yield WaitForSeconds(delay);
+	
+	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
+	var effectScript = effect.GetComponent(GeneralEffectScript);
+	effectScript.SetParent(this.transform);
+	effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
 }
 
 function UpdateSkill()
@@ -275,13 +312,6 @@ function UpdateSkill()
 		actionCfg.orderedAction = 5;
 	else
 		actionCfg.orderedAction = -1;
-}
-
-// Helper function
-function WaitForAnimation(time) {
-	yield WaitForSeconds(time);
-	//Debug.Log("attack finishes: " + Time.time);
-	currentState.isActing = false;
 }
 
 // Handles ground movement
@@ -410,9 +440,12 @@ function ApplyFlinch(duration) {
 	if (!currentState.isDead) {
 		//Debug.Log(duration);
 		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
+	
+		var hitFx = Instantiate(Resources.Load("Splatter"), transform.Find(hitLocation).position, Quaternion.identity);
+		hitFx.transform.parent = transform;
+		Destroy(hitFx, hitEffectDuration);
 		
-		currentState.isActing = false;
-		actionCfg.isArmed = false;
+		ResetAction();
 		animation.CrossFade("flinch", duration);
 	}
 }
@@ -421,8 +454,7 @@ function ApplyDeath() {
 	if (!currentState.isDead) {
 		currentState.isDead = true;
 		currentState.isFlinching = false;
-		currentState.isActing = false;
-		actionCfg.isArmed = false;
+		ResetAction();
 		animation.CrossFade("death");
 		StartCoroutine(DeathEffect());
 	}

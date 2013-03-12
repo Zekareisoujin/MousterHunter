@@ -12,8 +12,8 @@ var lifetime : float;
 
 function Start () {
 	calc = Calculator.GetCalculator();
-	//Debug.Log("here");
-	Destroy(this, lifetime);
+	//Debug.Log("destroyed in " + lifetime);
+	Destroy(gameObject, lifetime);
 }
 
 function SetParent(parent) {

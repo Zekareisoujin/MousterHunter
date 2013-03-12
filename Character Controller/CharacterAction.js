@@ -10,6 +10,7 @@ class CharacterAction {
 	var chainCost	: int;
 	
 	// Animation related
+	var animationPrepare	: String;
 	var animationStart		: String;
 	var animationRecovery 	: String;
 	
@@ -25,13 +26,21 @@ class CharacterAction {
 	// Extra specific effect
 	var keepMomentum 	: boolean;
 	
+	// Action delay basically
+	var prepareDuration	: float;
+	
+	// For preparation effect
+	var prepareEffect		: boolean;
+	var preparePath			: String;
+	var prepareSpawnPoint	: String;
+	
 	// For spawning extra effects:
 	var extraEffect 	: boolean;
 	var effectPath		: String;
 	var effectSpawnPoint: String;
-	var effectDelay		: float;
+	var effectDelay		: float;	// If delay = -1 it will be effectively equal to starting animation
 	
-	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armDelay){
+	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armDelay, animPrepare, prepareDuration){
 		this.name = name;
 		this.power = power;
 		this.impact = impact;
@@ -39,12 +48,20 @@ class CharacterAction {
 		this.animationStart = animStart;
 		this.animationRecovery = animRec;
 		this.armDelay = armDelay;
+		this.animationPrepare = animPrepare;
+		this.prepareDuration = prepareDuration;
 		movement = Vector3.zero;
 		knockback = Vector3.zero;
 		
 		keepMomentum = false;
-		
+		prepareEffect = false;
 		extraEffect = false;
+	}
+	
+	function AddPrepareEffect(effectPath, effectSpawnPoint) {
+		this.prepareEffect = true;
+		this.preparePath = effectPath;
+		this.prepareSpawnPoint = effectSpawnPoint;
 	}
 	
 	function AddEffect(effectPath, effectSpawnPoint, effectDelay) {

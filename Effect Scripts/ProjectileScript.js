@@ -1,7 +1,7 @@
 class ProjectileScript extends GeneralEffectScript {
 
-	var velocity = Vector3(5.0, 3.0, 0.0);
-	var gravity = -10;
+	var velocity = Vector3(10.0, 3.0, 0.0);
+	var gravity = -5;
 	var direction;
 
 	override function Start() {
