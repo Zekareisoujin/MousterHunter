@@ -18,6 +18,7 @@ protected var actionGraph;
 
 // Control casting animation
 protected var prepareEffect;
+protected var actionEffect;
 
 // Splatter effect point (being hit)
 protected var hitLocation = "root/hit";
@@ -156,6 +157,7 @@ class ActionConfiguration {
 	var chainCapacityMax = 6;
 	var chainLength = 0;
 	var chainMultiplier;
+	var chainCastReduction;
 }
 
 var actionCfg : ActionConfiguration;
@@ -175,6 +177,7 @@ function Start() {
 	
 	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
 	actionCfg.chainMultiplier = rm.GetChainMultiplier();
+	actionCfg.chainCastReduction = rm.GetChainCastReduction();
 	
 	// Experimental
 	var run = animation["run"];
@@ -206,11 +209,13 @@ function UpdateAttack() {
 					actionCfg.isPerformingAction = true;
 					
 					if (nextAction.prepareEffect){
-						prepareEffect = Instantiate(Resources.Load(nextAction.preparePath), transform.Find(nextAction.prepareSpawnPoint).position, Quaternion.identity);
-						prepareEffect.transform.parent = transform;
+						var spawnPoint = transform.Find(nextAction.prepareSpawnPoint);
+						prepareEffect = Instantiate(Resources.Load(nextAction.preparePath), spawnPoint.position, Quaternion.identity);
+						prepareEffect.transform.parent = spawnPoint.transform;
 					}
 					
-					StartCoroutine(WaitForActionPreparationEnd(nextAction, nextAction.prepareDuration));
+					var castDelay = nextAction.prepareDuration * actionCfg.chainCastReduction[actionCfg.chainLength];
+					StartCoroutine(WaitForActionPreparationEnd(nextAction, castDelay));
 				}
 			}
 		}
@@ -231,6 +236,12 @@ function WaitForActionPreparationEnd(action, length) {
 	
 	if (currentState.isActing) {
 		animation.CrossFade(action.animationStart);
+		
+		if (action.actionEffect) {
+		var spawnPoint = transform.Find(action.actionSpawnPoint);
+			actionEffect = Instantiate(Resources.Load(action.actionPath), spawnPoint.position, Quaternion.identity);
+			actionEffect.transform.parent = spawnPoint.transform;
+		}
 		
 		groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
 		airMovement.airSpeed += action.movement.y;
@@ -262,6 +273,7 @@ function WaitForActionPreparationEnd(action, length) {
 function WaitForActionEnd(action, length) {
 	yield WaitForSeconds(length);
 	
+	Destroy(actionEffect);
 	actionCfg.isPerformingAction = false;
 	if (currentState.isActing) {
 		actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;

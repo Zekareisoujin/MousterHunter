@@ -16,6 +16,8 @@ function Start () {
 	controller = GetComponent(CharacterActionController).inputController;
 	//controller.horizontalAxisRaw = -1;
 	bearing = GetComponent(CharacterActionController).groundMovement;
+	cam = GameObject.Find("Main Camera").GetComponent(CameraFocus);
+	enemy = cam.target;
 }
 
 function Update () {

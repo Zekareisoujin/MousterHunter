@@ -34,6 +34,11 @@ class CharacterAction {
 	var preparePath			: String;
 	var prepareSpawnPoint	: String;
 	
+	// For action effect
+	var actionEffect		: boolean;
+	var actionPath			: String;
+	var actionSpawnPoint	: String;
+	
 	// For spawning extra effects:
 	var extraEffect 	: boolean;
 	var effectPath		: String;
@@ -53,9 +58,10 @@ class CharacterAction {
 		movement = Vector3.zero;
 		knockback = Vector3.zero;
 		
-		keepMomentum = false;
-		prepareEffect = false;
-		extraEffect = false;
+		keepMomentum 	= false;
+		prepareEffect 	= false;
+		actionEffect 	= false;
+		extraEffect 	= false;
 	}
 	
 	function AddPrepareEffect(effectPath, effectSpawnPoint) {
@@ -64,7 +70,13 @@ class CharacterAction {
 		this.prepareSpawnPoint = effectSpawnPoint;
 	}
 	
-	function AddEffect(effectPath, effectSpawnPoint, effectDelay) {
+	function AddActionEffect(effectPath, effectSpawnPoint) {
+		this.actionEffect = true;
+		this.actionPath = effectPath;
+		this.actionSpawnPoint = effectSpawnPoint;
+	}
+	
+	function AddExtraEffect(effectPath, effectSpawnPoint, effectDelay) {
 		this.extraEffect = true;
 		this.effectPath = effectPath;
 		this.effectSpawnPoint = effectSpawnPoint;
