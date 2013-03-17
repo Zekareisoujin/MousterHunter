@@ -256,7 +256,7 @@ function WaitForActionPreparationEnd(action, length) {
 			groundMovement.walkSpeed = Mathf.Min(action.movement.x, groundMovement.walkSpeed);
 		}
 		
-		var duration = animation[action.animationStart].length;
+		var duration = animation[action.animationStart].length/animationSpeed;
 		var delay = action.armDelay;
 		var boostedAttack = stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
 		var boostedImpact = stats.GetImpact() * action.impact;
@@ -275,7 +275,7 @@ function WaitForActionPreparationEnd(action, length) {
 		if (action.extraEffect){
 			var effDelay = action.effectDelay;
 			if (action.effectDelay < 0)
-				effDelay = animation[action.animationStart].length;
+				effDelay = animation[action.animationStart].length/animationSpeed;
 			
 			StartCoroutine(SpawnEffect(action, effDelay, boostedAttack, boostedImpact, action.knockback));
 		}
@@ -291,7 +291,7 @@ function WaitForActionEnd(action, length) {
 		actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
 		animation.CrossFade(action.animationRecovery);
 		groundMovement.hasFriction = true;
-		StartCoroutine(WaitForActionRecoverEnd(length));
+		StartCoroutine(WaitForActionRecoverEnd(animation[action.animationRecovery].length/animationSpeed));
 	}
 }
 
