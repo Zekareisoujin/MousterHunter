@@ -17,6 +17,9 @@ class CharacterAction {
 	// Delay until the weapon getting armed
 	var armDelay	: float;
 	
+	// List of weapons to be armed (in case of character with multiple weapons)
+	var armWeapon	: Array;
+	
 	// Movement if necessary
 	var movement	: Vector3;
 	
@@ -45,13 +48,14 @@ class CharacterAction {
 	var effectSpawnPoint: String;
 	var effectDelay		: float;	// If delay = -1 it will be effectively equal to starting animation
 	
-	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armDelay, animPrepare, prepareDuration){
+	function CharacterAction(name, power, impact, chainCost, animStart, animRec, armWeapon, armDelay, animPrepare, prepareDuration){
 		this.name = name;
 		this.power = power;
 		this.impact = impact;
 		this.chainCost = chainCost;
 		this.animationStart = animStart;
 		this.animationRecovery = animRec;
+		this.armWeapon = armWeapon;
 		this.armDelay = armDelay;
 		this.animationPrepare = animPrepare;
 		this.prepareDuration = prepareDuration;

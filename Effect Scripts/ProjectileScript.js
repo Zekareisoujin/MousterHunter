@@ -19,6 +19,7 @@ class ProjectileScript extends GeneralEffectScript {
 	function Update() {
 		velocity.y += gravity * Time.deltaTime;
 		transform.position += velocity * Time.deltaTime;
+		transform.rotation = Quaternion.LookRotation(velocity);
 	}
 	
 	override function CheckHit(other : Collider) {

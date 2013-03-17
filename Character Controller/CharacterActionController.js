@@ -3,14 +3,15 @@ protected var rm : ResourceManager;
 
 var characterType : String;
 
-var permanentWeapon : GameObject;
 var deathEffect 	: GameObject;
 var floatingText 	: GameObject;
+var permanentWeapon	: GameObject[];
+
+var animationSpeed = 1.0;
 
 // Other components:
 protected var controller;
 protected var stats;
-protected var weapon;
 
 // Action variable
 protected var actionList;
@@ -168,8 +169,6 @@ function Start() {
 	controller = GetComponent(CharacterController);
 	stats = GetComponent(CharacterStatus);
 	
-	if (permanentWeapon != null)
-		weapon = permanentWeapon.GetComponent(WeaponController);
 	if (characterType != ""){
 		actionList = rm.GetActionList()[characterType];
 		actionGraph = rm.GetActionGraph()[characterType];
@@ -182,6 +181,10 @@ function Start() {
 	// Experimental
 	var run = animation["run"];
 	run.speed *= animationCfg.walkingSpeedModifier;
+	
+	for (var state : AnimationState in animation) {
+    	state.speed = animationSpeed;
+    }
 }
 
 function UpdateStatus() {
@@ -243,8 +246,11 @@ function WaitForActionPreparationEnd(action, length) {
 			actionEffect.transform.parent = spawnPoint.transform;
 		}
 		
-		groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
-		airMovement.airSpeed += action.movement.y;
+		//groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
+		//airMovement.airSpeed += action.movement.y;
+		groundMovement.walkSpeed = action.movement.x * groundMovement.facingDirection.x;
+		airMovement.airSpeed = action.movement.y;
+		
 		if (action.keepMomentum) {
 			groundMovement.hasFriction = false;
 			groundMovement.walkSpeed = Mathf.Min(action.movement.x, groundMovement.walkSpeed);
@@ -255,8 +261,14 @@ function WaitForActionPreparationEnd(action, length) {
 		var boostedAttack = stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
 		var boostedImpact = stats.GetImpact() * action.impact;
 	
-		if (weapon != null)
-			weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+		for (weaponIndex in action.armWeapon) {
+			if (permanentWeapon[weaponIndex] != null) {
+				var weapon = permanentWeapon[weaponIndex].GetComponent(WeaponController);
+				weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+			}
+		}
+		//if (weapon != null)
+		//	weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
 		
 		StartCoroutine(WaitForActionEnd(action, duration));
 		
