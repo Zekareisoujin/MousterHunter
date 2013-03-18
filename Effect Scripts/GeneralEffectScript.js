@@ -56,8 +56,7 @@ function OnTriggerStay (other : Collider) {
 
 // Helper functions.. possibly have to write my own array class
 function Contains(arr : Array, elem) : boolean {
-	var i;
-	for (i=0; i<arr.length; i++) {
+	for (var i=0; i<arr.length; i++) {
 		if (arr[i].GetInstanceID() == elem.GetInstanceID()) return true;
 	}
 	return false;

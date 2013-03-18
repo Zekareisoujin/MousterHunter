@@ -352,17 +352,16 @@ function UpdateGroundMovement() {
 		groundMovement.movingDirection = Mathf.Abs(groundMovement.walkSpeed) / groundMovement.walkSpeed;
 
 	if (controller.isGrounded){
+		if (h > 0)
+			groundMovement.facingDirection = Vector3.right;
+		else if (h < 0)
+			groundMovement.facingDirection = Vector3.left;
+			
+			
 		if (groundMovement.isBeingMoved){
-		
-			if (!currentState.isActing){
-				if (h > 0)
-					groundMovement.facingDirection = Vector3.right;
-				else if (h < 0)
-					groundMovement.facingDirection = Vector3.left;
-					
+			if (!currentState.isActing)		
 				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.facingDirection.x;
-				
-			}
+			
 		}else {
 			if (controller.isGrounded && groundMovement.hasFriction)
 				groundMovement.walkSpeed += groundMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;

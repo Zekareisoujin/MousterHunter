@@ -4,20 +4,38 @@ class ResourceManager {
 	private static var erm : EffectResourceManager;
 	private static var ActionList : Hashtable;
 	private static var ActionGraph : Hashtable;
+	private static var UnitType	: Hashtable;
+	
+	// Stage related variable
+	private static var StageDirectory : Hashtable;
+	private static var selectedStage : String;
+	private static var selectedCharacter : String;
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
 	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
 	
 	function ResourceManager() {
 		//erm = EffectResourceManager().GetEffectResourceManager();
+		InitializeUnitTypeTable();
 		InitializeActionList();
 		InitializeActionGraph();
+		InitializeStageDirectory();
 	}
 	
 	static function GetResourceManager() : ResourceManager {
 		if (rm == null)
 			rm = new ResourceManager();
 		return rm;
+	}
+	
+	function InitializeUnitTypeTable(){
+		UnitType = new Hashtable();
+		UnitType.Add("Warrior", 0);
+		UnitType.Add("Wizard", 1);
+		UnitType.Add("Rogue", 2);
+		UnitType.Add("Soldier", 3);
+		UnitType.Add("Archer", 4);
+		UnitType.Add("Brute", 5);
 	}
 	
 	function InitializeActionList() {
@@ -173,6 +191,26 @@ class ResourceManager {
 		ActionGraph.Add("Archer", enemyGraph);
 	}
 	
+	function InitializeStageDirectory(){
+		StageDirectory = new Hashtable();
+		
+		// Standard stage:
+		var standardStage = new Array();
+		
+		stdsc1 = new SceneInfo(0, 1);
+		stdsc1.AddEnemy(3, 3);
+		standardStage.Add(stdsc1);
+		
+		stdsc2 = new SceneInfo(1, 2);
+		stdsc2.AddEnemy(3, 4);
+		stdsc2.AddEnemy(4, 2);
+		stdsc2.AddEnemy(5, 1);
+		standardStage.Add(stdsc2);
+		
+		StageDirectory.Add("Standard Stage", standardStage);
+		
+	}
+	
 	function GetActionList(){
 		return ActionList;
 	}
@@ -187,5 +225,29 @@ class ResourceManager {
 	
 	function GetChainCastReduction(){
 		return chainCastReduction;
+	}
+	
+	function SetSelectedStage(stage){
+		selectedStage = stage;
+	}
+	
+	function GetSelectedStage(){
+		return selectedStage;
+	}
+	
+	function GetSceneInfo(stage){
+		return StageDirectory[stage];
+	}
+	
+	function SetSelectedCharacter(character : String){
+		selectedCharacter = character;
+	}
+	
+	function GetSelectedCharacter(){
+		return selectedCharacter;
+	}
+	
+	function GetUnitTypeFromString(str : String){
+		return UnitType[str];
 	}
 }

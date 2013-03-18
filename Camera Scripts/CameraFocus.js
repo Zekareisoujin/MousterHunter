@@ -1,21 +1,64 @@
+
+// Target of focus
 var target : Transform;
 
+// Relative position of the camera to the target
 var relativePosition : Vector3;
 
-var sensitivity : Vector3;
+// Boundaries
+var boundUpper	: float;
+var boundLower	: float;
+var boundLeft 	: float;
+var boundRight 	: float;
 
-var verticalFloor = 1;
+var horizontalLock = false;
+
+// World boundaries
+var wBoundLeft 	: Vector3;
+var wBoundRight : Vector3;
+var findingLeft = false;
+var findingRight= false;
 
 function Start () {
-	relativePosition = Vector3(0, 4, -10);
-	sensitivity = Vector3(1.0, 0.5, 1.0);
-	verticalFloor = 4;
 }
 
 function Update () {
-	/*transform.position.x = (target.position.x + relativePosition.x - transform.position.x) * sensitivity.x;
-	transform.position.y = (target.position.y + relativePosition.y - transform.position.y) * sensitivity.y;
-	transform.position.z = (target.position.z + relativePosition.z - transform.position.z) * sensitivity.z;*/
 	transform.position = target.position + relativePosition;
-	transform.position.y = Mathf.Min(transform.position.y, verticalFloor);
+	transform.position.y = Mathf.Min(Mathf.Max(transform.position.y, boundLower), boundUpper);
+	
+	if (horizontalLock) {
+		if (findingLeft) {
+			var left = camera.WorldToViewportPoint(wBoundLeft);
+			if (left.x >= 0) {
+				boundLeft = transform.position.x;
+				findingLeft = false;
+			}
+		}else
+			transform.position.x = Mathf.Max(transform.position.x, boundLeft);
+			
+		if (findingRight) {
+			var right = camera.WorldToViewportPoint(wBoundRight);
+			if (right.x <= 1) {
+				boundRight = transform.position.x;
+				findingRight = false;
+			}
+		}else
+			transform.position.x = Mathf.Min(transform.position.x, boundRight);
+	}
+}
+
+function SetHorizontalBoundary(left : Vector3, right : Vector3) {
+	wBoundLeft = left;
+	wBoundRight = right;
+	findingLeft = true;
+	findingRight = true;
+}
+
+function LockCamera(left : Vector3, right : Vector3) {
+	horizontalLock = true;
+	SetHorizontalBoundary(left, right);
+}
+
+function UnlockCamera() {
+	horizontalLock = false;
 }
