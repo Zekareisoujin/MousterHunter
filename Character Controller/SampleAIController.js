@@ -23,7 +23,7 @@ function Start () {
 }
 
 function Update () {
-	if (isActive) {
+	if (isActive && enemy != null) {
 		time += Time.deltaTime;
 		var diffx = enemy.position.x - transform.position.x;
 		

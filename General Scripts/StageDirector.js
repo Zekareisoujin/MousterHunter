@@ -3,6 +3,7 @@ var stageName;
 var boundaries 	: GameObject[];
 var sceneTrigger: GameObject;
 var mainCam		: Camera;
+var mainCamScript: CameraFocus;
 
 var playerCharacterName : String;
 var playerCharacter	: Transform;
@@ -38,6 +39,7 @@ function Start () {
 	sceneList = rm.GetSceneInfo(stageName);
 	sceneTrigger = Instantiate(sceneTrigger, Vector3.zero, Quaternion.identity);
 	mainCam = Camera.main;
+	mainCamScript = mainCam.GetComponent(CameraFocus);
 	
 	// Set up player character
 	playerCharacterName = rm.GetSelectedCharacter();
@@ -108,15 +110,21 @@ function LockScene(isLock) {
 	}
 	
 	if (isLock) {
-		mainCam.GetComponent(CameraFocus).LockCamera(boundLeft, boundRight);
+		mainCamScript.LockCamera(boundLeft, boundRight);
 	}else
-		mainCam.GetComponent(CameraFocus).UnlockCamera();
+		mainCamScript.UnlockCamera();
 }
 
 // Event handler... not really
 function ReportDeath(casualty) {
-	enemyList.Remove(casualty);
-	//Debug.Log(enemyList.length);
-	if (enemyList.length == 0)
-		SceneFinished();
+	if (casualty.GetInstanceID() == playerCharacter.gameObject.GetInstanceID()) {
+		Debug.Log("here");
+		mainCamScript.ClearFocus();
+		// Apply player death logic
+	} else {
+		enemyList.Remove(casualty);
+		
+		if (enemyList.length == 0)
+			SceneFinished();
+	}
 }

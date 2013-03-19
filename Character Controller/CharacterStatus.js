@@ -30,6 +30,9 @@ var attackFrequency : float = 0.1;
 var lifeBarObject : GameObject;
 var lifeBarScript : GUIBar;
 
+// Status
+var isAlive : boolean; //fk this shit
+
 // Global resources
 protected var rm		: ResourceManager;
 protected var director 	: StageDirector;
@@ -40,6 +43,7 @@ function Start () {
 	
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
 	currentLife = maxLife;
+	isAlive = true;
 	if (lifeBarObject != null) {
 		lifeBarScript = lifeBarObject.GetComponent(GUIBar);
 		lifeBarScript.SetDisplayValue(1.0);
@@ -73,40 +77,44 @@ function UpdateDifficultySetting(newDifficultyModifier) {
 }
 
 function ApplyDamage(dmg) {
-	currentLife -= dmg;
-	var roundDmg = Mathf.Round(dmg);
-	SendMessage("ShowFloatingText", roundDmg.ToString(), SendMessageOptions.DontRequireReceiver);
-	
-	if (currentLife <= 0){
-		currentLife = 0;
-		SendMessage("ApplyDeath", SendMessageOptions.DontRequireReceiver);
-		director.ReportDeath(gameObject);
-	}
-	
-	if (lifeBarScript != null){
-		var displayVal = currentLife / maxLife;	
-		lifeBarScript.SetDisplayValue(displayVal);
+	if (isAlive) {
+		currentLife -= dmg;
+		var roundDmg = Mathf.Round(dmg);
+		SendMessage("ShowFloatingText", roundDmg.ToString(), SendMessageOptions.DontRequireReceiver);
+		
+		if (currentLife <= 0){
+			currentLife = 0;
+			isAlive = false;
+			SendMessage("ApplyDeath", SendMessageOptions.DontRequireReceiver);
+			director.ReportDeath(gameObject);
+		}
+		
+		if (lifeBarScript != null){
+			var displayVal = currentLife / maxLife;	
+			lifeBarScript.SetDisplayValue(displayVal);
+		}
 	}
 }
 
-function RecoverHealth(health)
-{
-	var newLife = currentLife + health;
-	var gainedHp = health;
-	if(newLife > maxLife)
-	{
-		gainedHp = maxLife - currentLife;
-		currentLife = maxLife;
-	}
-	else
-	{
-		currentLife = newLife;
-	}
-	gainedHp = Mathf.Round(gainedHp);
-	SendMessage("ShowFloatingText", "+"+gainedHp.ToString(), SendMessageOptions.DontRequireReceiver);
-	
-	if (lifeBarScript != null){
-		var displayVal = currentLife / maxLife;	
-		lifeBarScript.SetDisplayValue(displayVal);
+function RecoverHealth(health) {
+	if (isAlive) {
+		var newLife = currentLife + health;
+		var gainedHp = health;
+		if(newLife > maxLife)
+		{
+			gainedHp = maxLife - currentLife;
+			currentLife = maxLife;
+		}
+		else
+		{
+			currentLife = newLife;
+		}
+		gainedHp = Mathf.Round(gainedHp);
+		SendMessage("ShowFloatingText", "+"+gainedHp.ToString(), SendMessageOptions.DontRequireReceiver);
+		
+		if (lifeBarScript != null){
+			var displayVal = currentLife / maxLife;	
+			lifeBarScript.SetDisplayValue(displayVal);
+		}
 	}
 }

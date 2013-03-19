@@ -26,9 +26,6 @@ protected var actionEffect;
 protected var hitLocation = "root/hit";
 protected var hitEffectDuration = 0.3;
 
-// Temporary
-var isFocused = false;
-
 // Container class that contains various character states
 class CharacterStates {
 	// Check whether the character is controllable
@@ -494,12 +491,9 @@ function DeathEffect() {
 	yield WaitForSeconds(3.0);
 	var deathFx = Instantiate(deathEffect, transform.position, Quaternion.identity);
 	Destroy (deathFx, 5.0);
-	Destroy (this, 5.0);
+	Destroy (gameObject, 5.0);
 	transform.position.y -= 100;
 	
-	// Temporary
-	if (isFocused)
-		GameObject.Find("Main Camera").GetComponent(CameraFocus).enabled = false;
 }
 
 function ShowFloatingText(displayText) {

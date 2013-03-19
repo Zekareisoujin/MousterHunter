@@ -152,13 +152,13 @@ class ResourceManager {
 		var archerActionList = new Array();
 		archerActionList.Add(shoot);
 		
-		var ballistaFire = new CharacterAction("Ranged Attack", 1.0, 1.0, 1, "shoot", "reload", 0.05, "idle", 0.2);
+		var ballistaFire = new CharacterAction("Ranged Attack", 1.0, 1.0, 1, "shoot", "reload", weapon0, 0.05, "idle", 0.2);
 		ballistaFire.AddExtraEffect("ballistaBolt", "spawnPoint", 0.0);
 		
 		var ballistaActionList = new Array();
 		ballistaActionList.Add(ballistaFire);
 
-		var cannonFire = new CharacterAction("Ranged Attack", 1.0, 1.0, 1, "shoot", "reload", 0.05, "idle", 0.2);
+		var cannonFire = new CharacterAction("Ranged Attack", 1.0, 1.0, 1, "shoot", "reload", weapon0, 0.05, "idle", 0.2);
 		cannonFire.AddExtraEffect("cannonball", "spawnPoint", 0.0);
 		
 		var cannonActionList = new Array();

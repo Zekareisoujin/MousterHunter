@@ -37,7 +37,7 @@ function CheckHit(other : Collider) {
 	var defenderStats = other.GetComponent(CharacterStatus);
 	var defenderController = other.GetComponent(CharacterActionController);
 	
-	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderStats.isDead){
+	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead){
 		if (Time.time < armEnd && Time.time > armStart) {
 			// Calculation:
 			var dmg = calc.CalculateDamage(attack, defenderStats.GetDefensePower());

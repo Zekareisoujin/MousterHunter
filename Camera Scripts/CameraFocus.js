@@ -1,6 +1,7 @@
 
 // Target of focus
 var target : Transform;
+var onFocus: boolean;
 
 // Relative position of the camera to the target
 var relativePosition : Vector3;
@@ -25,31 +26,33 @@ function Start () {
 }
 
 function Update () {
-	var finalPosition;
-	finalPosition = target.position + relativePosition;
-	finalPosition.y = Mathf.Min(Mathf.Max(finalPosition.y, boundLower), boundUpper);
-	
-	if (horizontalLock) {
-		if (findingLeft) {
-			var left = camera.WorldToViewportPoint(wBoundLeft);
-			if (left.x >= 0) {
-				boundLeft = finalPosition.x;
-				findingLeft = false;
-			}
-		}else
-			finalPosition.x = Mathf.Max(finalPosition.x, boundLeft);
-			
-		if (findingRight) {
-			var right = camera.WorldToViewportPoint(wBoundRight);
-			if (right.x <= 1) {
-				boundRight = finalPosition.x;
-				findingRight = false;
-			}
-		}else
-			finalPosition.x = Mathf.Min(finalPosition.x, boundRight);
+	if (onFocus) {
+		var finalPosition;
+		finalPosition = target.position + relativePosition;
+		finalPosition.y = Mathf.Min(Mathf.Max(finalPosition.y, boundLower), boundUpper);
+		
+		if (horizontalLock) {
+			if (findingLeft) {
+				var left = camera.WorldToViewportPoint(wBoundLeft);
+				if (left.x >= 0) {
+					boundLeft = finalPosition.x;
+					findingLeft = false;
+				}
+			}else
+				finalPosition.x = Mathf.Max(finalPosition.x, boundLeft);
+				
+			if (findingRight) {
+				var right = camera.WorldToViewportPoint(wBoundRight);
+				if (right.x <= 1) {
+					boundRight = finalPosition.x;
+					findingRight = false;
+				}
+			}else
+				finalPosition.x = Mathf.Min(finalPosition.x, boundRight);
+		}
+		
+		PanCamera(finalPosition);
 	}
-	
-	PanCamera(finalPosition);
 }
 
 function PanCamera(finalPosition) {
@@ -70,4 +73,14 @@ function LockCamera(left : Vector3, right : Vector3) {
 
 function UnlockCamera() {
 	horizontalLock = false;
+}
+
+function SetFocus(target) {
+	this.target = target;
+	onFocus = true;
+}
+
+function ClearFocus() {
+	this.target = null;
+	onFocus = false;
 }
