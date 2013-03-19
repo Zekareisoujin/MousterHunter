@@ -12,6 +12,8 @@ var enemy : Transform;
 
 var attackRange = 0.5;
 
+var patrol = true;
+
 function Start () {
 	controller = GetComponent(CharacterActionController).inputController;
 	//controller.horizontalAxisRaw = -1;
@@ -23,15 +25,19 @@ function Start () {
 function Update () {
 	if (isActive) {
 		time += Time.deltaTime;
-		if (controller.horizontalAxisRaw == 0)
-			controller.horizontalAxisRaw = -1;
-		//Debug.Log(controller.horizontalAxisRaw);
-		if (time > patrolPeriod){
-			controller.horizontalAxisRaw *= -1;
-			time = 0;
+		var diffx = enemy.position.x - transform.position.x;
+		
+		if (patrol) {
+			if (controller.horizontalAxisRaw == 0)
+				controller.horizontalAxisRaw = -1;
+			if (time > patrolPeriod){
+				controller.horizontalAxisRaw *= -1;
+				time = 0;
+			}
+		}else {
+			controller.horizontalAxisRaw = (diffx >= 0? 1 : -1);
 		}
 		
-		var diffx = enemy.position.x - transform.position.x;
 		//controller.attackCommand = ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.direction.x > 0));
 		if ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.facingDirection.x > 0)){
 			controller.attackCommand = true;

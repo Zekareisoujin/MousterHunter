@@ -3,14 +3,15 @@ protected var rm : ResourceManager;
 
 var characterType : String;
 
-var permanentWeapon : GameObject;
 var deathEffect 	: GameObject;
 var floatingText 	: GameObject;
+var permanentWeapon	: GameObject[];
+
+var animationSpeed = 1.0;
 
 // Other components:
 protected var controller;
 protected var stats;
-protected var weapon;
 
 // Action variable
 protected var actionList;
@@ -168,8 +169,6 @@ function Start() {
 	controller = GetComponent(CharacterController);
 	stats = GetComponent(CharacterStatus);
 	
-	if (permanentWeapon != null)
-		weapon = permanentWeapon.GetComponent(WeaponController);
 	if (characterType != ""){
 		actionList = rm.GetActionList()[characterType];
 		actionGraph = rm.GetActionGraph()[characterType];
@@ -182,6 +181,10 @@ function Start() {
 	// Experimental
 	var run = animation["run"];
 	run.speed *= animationCfg.walkingSpeedModifier;
+	
+	for (var state : AnimationState in animation) {
+    	state.speed = animationSpeed;
+    }
 }
 
 function UpdateStatus() {
@@ -243,27 +246,36 @@ function WaitForActionPreparationEnd(action, length) {
 			actionEffect.transform.parent = spawnPoint.transform;
 		}
 		
-		groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
-		airMovement.airSpeed += action.movement.y;
+		//groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
+		//airMovement.airSpeed += action.movement.y;
+		groundMovement.walkSpeed = action.movement.x * groundMovement.facingDirection.x;
+		airMovement.airSpeed = action.movement.y;
+		
 		if (action.keepMomentum) {
 			groundMovement.hasFriction = false;
 			groundMovement.walkSpeed = Mathf.Min(action.movement.x, groundMovement.walkSpeed);
 		}
 		
-		var duration = animation[action.animationStart].length;
+		var duration = animation[action.animationStart].length/animationSpeed;
 		var delay = action.armDelay;
 		var boostedAttack = stats.GetAttackPower() * action.power * actionCfg.chainMultiplier[actionCfg.chainLength++];
 		var boostedImpact = stats.GetImpact() * action.impact;
 	
-		if (weapon != null)
-			weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+		for (weaponIndex in action.armWeapon) {
+			if (permanentWeapon[weaponIndex] != null) {
+				var weapon = permanentWeapon[weaponIndex].GetComponent(WeaponController);
+				weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+			}
+		}
+		//if (weapon != null)
+		//	weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
 		
 		StartCoroutine(WaitForActionEnd(action, duration));
 		
 		if (action.extraEffect){
 			var effDelay = action.effectDelay;
 			if (action.effectDelay < 0)
-				effDelay = animation[action.animationStart].length;
+				effDelay = animation[action.animationStart].length/animationSpeed;
 			
 			StartCoroutine(SpawnEffect(action, effDelay, boostedAttack, boostedImpact, action.knockback));
 		}
@@ -279,7 +291,7 @@ function WaitForActionEnd(action, length) {
 		actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
 		animation.CrossFade(action.animationRecovery);
 		groundMovement.hasFriction = true;
-		StartCoroutine(WaitForActionRecoverEnd(length));
+		StartCoroutine(WaitForActionRecoverEnd(animation[action.animationRecovery].length/animationSpeed));
 	}
 }
 
@@ -340,17 +352,16 @@ function UpdateGroundMovement() {
 		groundMovement.movingDirection = Mathf.Abs(groundMovement.walkSpeed) / groundMovement.walkSpeed;
 
 	if (controller.isGrounded){
+		if (h > 0)
+			groundMovement.facingDirection = Vector3.right;
+		else if (h < 0)
+			groundMovement.facingDirection = Vector3.left;
+			
+			
 		if (groundMovement.isBeingMoved){
-		
-			if (!currentState.isActing){
-				if (h > 0)
-					groundMovement.facingDirection = Vector3.right;
-				else if (h < 0)
-					groundMovement.facingDirection = Vector3.left;
-					
+			if (!currentState.isActing)		
 				groundMovement.walkSpeed += groundMovement.acceleration * Time.deltaTime * groundMovement.facingDirection.x;
-				
-			}
+			
 		}else {
 			if (controller.isGrounded && groundMovement.hasFriction)
 				groundMovement.walkSpeed += groundMovement.deceleration * Time.deltaTime * groundMovement.movingDirection;
