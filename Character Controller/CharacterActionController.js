@@ -1,5 +1,6 @@
-
-protected var rm : ResourceManager;
+// Global resources
+protected var rm		: ResourceManager;
+protected var director 	: StageDirector;
 
 var characterType : String;
 
@@ -164,7 +165,8 @@ class ActionConfiguration {
 var actionCfg : ActionConfiguration;
 
 function Start() {
-	rm = ResourceManager().GetResourceManager();
+	rm = ResourceManager.GetResourceManager();
+	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	
 	controller = GetComponent(CharacterController);
 	stats = GetComponent(CharacterStatus);
@@ -350,12 +352,15 @@ function UpdateGroundMovement() {
 		groundMovement.movingDirection = groundMovement.facingDirection.x;
 	else
 		groundMovement.movingDirection = Mathf.Abs(groundMovement.walkSpeed) / groundMovement.walkSpeed;
+	
 
 	if (controller.isGrounded){
-		if (h > 0)
-			groundMovement.facingDirection = Vector3.right;
-		else if (h < 0)
-			groundMovement.facingDirection = Vector3.left;
+		if (currentState.isControllable) {
+			if (h > 0)
+				groundMovement.facingDirection = Vector3.right;
+			else if (h < 0)
+				groundMovement.facingDirection = Vector3.left;
+		}
 			
 			
 		if (groundMovement.isBeingMoved){
@@ -384,7 +389,7 @@ function UpdateGroundMovement() {
 
 function UpdateAirMovement() {
 	// Apply jumping logic - initial jumping force
-	if (controller.isGrounded && inputController.jumpCommand && !currentState.isActing)
+	if (controller.isGrounded && inputController.jumpCommand && !currentState.isActing && currentState.isControllable)
 		airMovement.airSpeed += airMovement.initialSpeed;
 		
 	// Apply gravity if character is not grounded

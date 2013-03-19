@@ -19,32 +19,41 @@ var wBoundRight : Vector3;
 var findingLeft = false;
 var findingRight= false;
 
+var panningPeriod = 0.3;
+
 function Start () {
 }
 
 function Update () {
-	transform.position = target.position + relativePosition;
-	transform.position.y = Mathf.Min(Mathf.Max(transform.position.y, boundLower), boundUpper);
+	var finalPosition;
+	finalPosition = target.position + relativePosition;
+	finalPosition.y = Mathf.Min(Mathf.Max(finalPosition.y, boundLower), boundUpper);
 	
 	if (horizontalLock) {
 		if (findingLeft) {
 			var left = camera.WorldToViewportPoint(wBoundLeft);
 			if (left.x >= 0) {
-				boundLeft = transform.position.x;
+				boundLeft = finalPosition.x;
 				findingLeft = false;
 			}
 		}else
-			transform.position.x = Mathf.Max(transform.position.x, boundLeft);
+			finalPosition.x = Mathf.Max(finalPosition.x, boundLeft);
 			
 		if (findingRight) {
 			var right = camera.WorldToViewportPoint(wBoundRight);
 			if (right.x <= 1) {
-				boundRight = transform.position.x;
+				boundRight = finalPosition.x;
 				findingRight = false;
 			}
 		}else
-			transform.position.x = Mathf.Min(transform.position.x, boundRight);
+			finalPosition.x = Mathf.Min(finalPosition.x, boundRight);
 	}
+	
+	PanCamera(finalPosition);
+}
+
+function PanCamera(finalPosition) {
+	transform.position += ((finalPosition - transform.position)/panningPeriod) * Time.deltaTime;
 }
 
 function SetHorizontalBoundary(left : Vector3, right : Vector3) {

@@ -10,9 +10,11 @@ class ResourceManager {
 	private static var StageDirectory : Hashtable;
 	private static var selectedStage : String;
 	private static var selectedCharacter : String;
+	private static var activeStageDirector : GameObject;
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
 	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
+	
 	
 	function ResourceManager() {
 		//erm = EffectResourceManager().GetEffectResourceManager();
@@ -249,5 +251,13 @@ class ResourceManager {
 	
 	function GetUnitTypeFromString(str : String){
 		return UnitType[str];
+	}
+	
+	function SetCurrentActiveStageDirector(director) {
+		activeStageDirector = director;
+	}
+	
+	function GetCurrentActiveStageDirector() {
+		return activeStageDirector;
 	}
 }

@@ -30,7 +30,14 @@ var attackFrequency : float = 0.1;
 var lifeBarObject : GameObject;
 var lifeBarScript : GUIBar;
 
+// Global resources
+protected var rm		: ResourceManager;
+protected var director 	: StageDirector;
+
 function Start () {
+	rm = ResourceManager.GetResourceManager();
+	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
+	
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
 	currentLife = maxLife;
 	if (lifeBarObject != null) {
@@ -67,12 +74,13 @@ function UpdateDifficultySetting(newDifficultyModifier) {
 
 function ApplyDamage(dmg) {
 	currentLife -= dmg;
+	var roundDmg = Mathf.Round(dmg);
+	SendMessage("ShowFloatingText", roundDmg.ToString(), SendMessageOptions.DontRequireReceiver);
+	
 	if (currentLife <= 0){
 		currentLife = 0;
 		SendMessage("ApplyDeath", SendMessageOptions.DontRequireReceiver);
-	} else {
-		var roundDmg = Mathf.Round(dmg);
-		SendMessage("ShowFloatingText", roundDmg.ToString(), SendMessageOptions.DontRequireReceiver);
+		director.ReportDeath(gameObject);
 	}
 	
 	if (lifeBarScript != null){

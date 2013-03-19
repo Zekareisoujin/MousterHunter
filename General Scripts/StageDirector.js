@@ -17,6 +17,8 @@ var spawnPointRight : Vector3;	//	with respect to the 2 boundaries
 var currentSceneIdx;
 var currentSceneInfo;
 
+var enemyList	: Array;
+
 // Global resources
 var rm : ResourceManager;
 var unitType : GameObject[];	// For now the unit type has to defined through mono object behaviours,
@@ -25,9 +27,12 @@ var unitType : GameObject[];	// For now the unit type has to defined through mon
 // Settings of the stage
 var sceneList : Array;
 
-function Start () {
+function Awake() {
 	rm = ResourceManager.GetResourceManager();
-	
+	rm.SetCurrentActiveStageDirector(gameObject);
+}
+
+function Start () {
 	stageName = rm.GetSelectedStage();
 	stageName = "Standard Stage"; //test
 	sceneList = rm.GetSceneInfo(stageName);
@@ -38,18 +43,29 @@ function Start () {
 	playerCharacterName = rm.GetSelectedCharacter();
 	//playerCharacter = Instantiate... blah blah, later
 	
+	enemyList = new Array();
+	
 	//For testing:
 	playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
 	
 	sceneTrigger.GetComponent(SceneTrigger).director = gameObject;
 	sceneTrigger.GetComponent(SceneTrigger).target = playerCharacter.gameObject;
 	
-	InitializeScene(0);
+	currentSceneIdx = 0;
+	InitializeCurrentScene();
 }
 
-function InitializeScene(idx) {
-	currentSceneIdx = idx;
-	currentSceneInfo = sceneList[idx];
+function ForwardScene() {
+	currentSceneIdx++;
+	if (currentSceneIdx >= sceneList.length) {
+		// Game over, congratulations
+	}
+	
+	InitializeCurrentScene();
+}
+
+function InitializeCurrentScene() {
+	currentSceneInfo = sceneList[currentSceneIdx];
 	boundLeftIdx = currentSceneInfo.leftBoundIndex;
 	boundRightIdx = currentSceneInfo.rightBoundIndex;
 	boundLeft = boundaries[boundLeftIdx].transform.position;
@@ -67,6 +83,25 @@ function SceneTriggered(){
 	LockScene(true);
 }
 
+function SpawnEnemiesForCurrentScene() {
+	enemyComposition = currentSceneInfo.GetEnemyComposition();
+	for (enemyEntry in enemyComposition) {
+		//Debug.Log(enemyEntry.Key + " " + enemyEntry.Value);
+		for (var i=0; i<enemyEntry.Value; i++){
+			var spawnPt = (Random.value < 0.5? spawnPointLeft: spawnPointRight);
+			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
+			unit.GetComponent(SampleAIController).patrol = false; // temporary
+			enemyList.Add(unit);
+			
+		}
+	}
+}
+
+function SceneFinished(){
+	LockScene(false);
+	ForwardScene();
+}
+
 function LockScene(isLock) {
 	for (wall in boundaries){
 		wall.collider.enabled = isLock;
@@ -78,13 +113,10 @@ function LockScene(isLock) {
 		mainCam.GetComponent(CameraFocus).UnlockCamera();
 }
 
-function SpawnEnemiesForCurrentScene() {
-	enemyComposition = currentSceneInfo.GetEnemyComposition();
-	for (enemyEntry in enemyComposition) {
-		//Debug.Log(enemyEntry.Key + " " + enemyEntry.Value);
-		for (var i=0; i<enemyEntry.Value; i++){
-			//Instantiate blah blah
-			Debug.Log("SpawnSPaaspdawn!!!");
-		}
-	}
+// Event handler... not really
+function ReportDeath(casualty) {
+	enemyList.Remove(casualty);
+	//Debug.Log(enemyList.length);
+	if (enemyList.length == 0)
+		SceneFinished();
 }
