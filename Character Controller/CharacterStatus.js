@@ -88,3 +88,25 @@ function ApplyDamage(dmg) {
 		lifeBarScript.SetDisplayValue(displayVal);
 	}
 }
+
+function RecoverHealth(health)
+{
+	var newLife = currentLife + health;
+	var gainedHp = health;
+	if(newLife > maxLife)
+	{
+		gainedHp = maxLife - currentLife;
+		currentLife = maxLife;
+	}
+	else
+	{
+		currentLife = newLife;
+	}
+	gainedHp = Mathf.Round(gainedHp);
+	SendMessage("ShowFloatingText", "+"+gainedHp.ToString(), SendMessageOptions.DontRequireReceiver);
+	
+	if (lifeBarScript != null){
+		var displayVal = currentLife / maxLife;	
+		lifeBarScript.SetDisplayValue(displayVal);
+	}
+}
