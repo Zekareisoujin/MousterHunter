@@ -9,6 +9,7 @@ var floatingText 	: GameObject;
 var permanentWeapon	: GameObject[];
 
 var animationSpeed = 1.0;
+var ownerTeamID		: int;
 
 // Other components:
 protected var controller;
@@ -161,12 +162,15 @@ class ActionConfiguration {
 
 var actionCfg : ActionConfiguration;
 
-function Start() {
+function Awake() {
 	rm = ResourceManager.GetResourceManager();
-	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	
 	controller = GetComponent(CharacterController);
 	stats = GetComponent(CharacterStatus);
+}
+
+function Start() {
+	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	
 	if (characterType != ""){
 		actionList = rm.GetActionList()[characterType];
@@ -177,13 +181,16 @@ function Start() {
 	actionCfg.chainMultiplier = rm.GetChainMultiplier();
 	actionCfg.chainCastReduction = rm.GetChainCastReduction();
 	
+	ownerTeamID = stats.GetTeamID();
+	animationSpeed = stats.GetSpeed();
+	for (var state : AnimationState in animation) {
+    	state.speed = animationSpeed;
+    }
+    
 	// Experimental
 	var run = animation["run"];
 	run.speed *= animationCfg.walkingSpeedModifier;
 	
-	for (var state : AnimationState in animation) {
-    	state.speed = animationSpeed;
-    }
 }
 
 function UpdateStatus() {
@@ -263,7 +270,7 @@ function WaitForActionPreparationEnd(action, length) {
 		for (weaponIndex in action.armWeapon) {
 			if (permanentWeapon[weaponIndex] != null) {
 				var weapon = permanentWeapon[weaponIndex].GetComponent(WeaponController);
-				weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback);
+				weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback, ownerTeamID);
 			}
 		}
 		//if (weapon != null)
@@ -318,7 +325,7 @@ function SpawnEffect(action, delay, effAttack, effImpact, effKnockback) {
 	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
 	var effectScript = effect.GetComponent(GeneralEffectScript);
 	effectScript.SetParent(this.transform);
-	effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
+	effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
 }
 
 function UpdateSkill()

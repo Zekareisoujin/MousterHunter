@@ -11,10 +11,21 @@ class ResourceManager {
 	private static var selectedStage : String;
 	private static var selectedCharacter : String;
 	private static var activeStageDirector : GameObject;
+	private static var activeDataCollector : DataCollector;
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
 	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
 	
+	// Some constants
+	public static final var UNIT_TYPE_WARRIOR 	= 0;
+	public static final var UNIT_TYPE_WIZARD 	= 1;
+	public static final var UNIT_TYPE_ROGUE		= 2;
+	public static final var UNIT_TYPE_SOLDIER	= 3;
+	public static final var UNIT_TYPE_ARCHER	= 4;
+	public static final var UNIT_TYPE_BRUTE		= 5;
+	
+	public static final var TEAM_ID_PLAYER		= 0;
+	public static final var TEAM_ID_AI_ENEMY	= 1;
 	
 	function ResourceManager() {
 		//erm = EffectResourceManager().GetEffectResourceManager();
@@ -216,13 +227,13 @@ class ResourceManager {
 		var standardStage = new Array();
 		
 		stdsc1 = new SceneInfo(0, 1);
-		stdsc1.AddEnemy(3, 3);
+		stdsc1.AddEnemy(UNIT_TYPE_SOLDIER, 3);
 		standardStage.Add(stdsc1);
 		
 		stdsc2 = new SceneInfo(1, 2);
-		stdsc2.AddEnemy(3, 4);
-		stdsc2.AddEnemy(4, 2);
-		stdsc2.AddEnemy(5, 1);
+		stdsc2.AddEnemy(UNIT_TYPE_SOLDIER, 4);
+		stdsc2.AddEnemy(UNIT_TYPE_ARCHER, 2);
+		stdsc2.AddEnemy(UNIT_TYPE_BRUTE, 1);
 		standardStage.Add(stdsc2);
 		
 		StageDirectory.Add("Standard Stage", standardStage);
@@ -275,5 +286,13 @@ class ResourceManager {
 	
 	function GetCurrentActiveStageDirector() {
 		return activeStageDirector;
+	}
+	
+	function SetCurrentActiveDataCollector(dataCollector) {
+		activeDataCollector = dataCollector;
+	}
+	
+	function GetCurrentActiveDataCollector() {
+		return activeDataCollector;
 	}
 }

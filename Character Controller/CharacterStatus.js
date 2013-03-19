@@ -20,6 +20,10 @@ var impactVar 	: float = 5.0;
 var resilienceBase 	: float = 10.0;
 var resilienceVar 	: float = 5.0;
 
+// Speed, modify walk speed & action speed
+var speedBase	: float = 1.0;
+var speedVar	: float = 0.0;
+
 // Difficulty modifier
 var difficultyModifier	: float = 1.0;
 
@@ -32,6 +36,9 @@ var lifeBarScript : GUIBar;
 
 // Status
 var isAlive : boolean; //fk this shit
+
+// Allegiance
+var teamID 	: int;
 
 // Global resources
 protected var rm		: ResourceManager;
@@ -68,6 +75,18 @@ function GetImpact() {
 
 function GetResilience() {
 	return resilienceBase + resilienceVar * difficultyModifier;
+}
+
+function GetSpeed() {
+	return speedBase + speedVar * difficultyModifier;
+}
+
+function SetTeamID(id) {
+	teamID = id;
+}
+
+function GetTeamID() {
+	return teamID;
 }
 
 function UpdateDifficultySetting(newDifficultyModifier) {

@@ -5,6 +5,7 @@ var bgImage : Texture2D; // background image that is 256 x 32
 var fgImage : Texture2D; // foreground image that is 256 x 32
 var displayValue = 0.0; // a float between 0.0 and 1.0, one that is being displayed
 var actualValue = 0.0; // similar to displayValue, but in the future displayValue will be used for animation instead
+var lerpPeriod = 0.2;
 
 function OnGUI () {
 	// Create one Group to contain both images
@@ -27,12 +28,9 @@ function OnGUI () {
 }
 
 function Update() {
-	//displayValue = Time.time*0.05;
+	displayValue += ((actualValue - displayValue)/lerpPeriod) * Time.deltaTime;
 }
 
 function SetDisplayValue(newVal) {
-	displayValue = newVal;
-}
-
-function LerpDisplayValue(newVal) {
+	actualValue = newVal;
 }

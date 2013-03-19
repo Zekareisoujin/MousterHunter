@@ -28,7 +28,7 @@ class ProjectileSpawnerScript extends GeneralEffectScript {
 		var effect = Instantiate(Resources.Load(effectPath), effectSpawnPoint, Quaternion.identity);
 		var effectScript = effect.GetComponent(ProjectileScript);
 		effectScript.SetParent(parent);
-		effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
+		effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
 		effectScript.velocity = velocity;
 	}
 	
@@ -36,6 +36,6 @@ class ProjectileSpawnerScript extends GeneralEffectScript {
 		var effect = Instantiate(Resources.Load(effectPath), effectSpawnPoint, Quaternion.identity);
 		var effectScript = effect.GetComponent(ProjectileScript);
 		effectScript.SetParent(parent);
-		effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
+		effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
 	}
 }

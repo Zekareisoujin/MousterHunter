@@ -14,6 +14,6 @@ class ExplodingProjectileScript extends ProjectileScript {
 		var effect = Instantiate(Resources.Load(explosionPath), transform.position, Quaternion.identity);
 		var effectScript = effect.GetComponent(GeneralEffectScript);
 		effectScript.SetParent(parent);
-		effectScript.SetEffectArm(attack, impact, knockback);
+		effectScript.SetEffectArm(attack, impact, knockback, ownerTeamID);
 	}
 }

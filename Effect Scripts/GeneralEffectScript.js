@@ -5,6 +5,7 @@ var calc : Calculator;
 var attack	: float;
 var impact 	: float;
 var knockback : Vector3;
+var ownerTeamID : int;
 
 var oldTarget : Array = new Array();
 
@@ -21,10 +22,11 @@ function SetParent(parent) {
 	Physics.IgnoreCollision(collider, parent.collider);
 }
 
-function SetEffectArm(attack, impact, knockback) {
+function SetEffectArm(attack, impact, knockback, ownerTeamID) {
 	this.attack 	= attack;
 	this.impact 	= impact;
 	this.knockback 	= knockback;
+	this.ownerTeamID= ownerTeamID;
 	oldTarget.Clear();
 }
 
@@ -32,7 +34,7 @@ function CheckHit(other : Collider) {
 	var defenderStats = other.GetComponent(CharacterStatus);
 	var defenderController = other.GetComponent(CharacterActionController);
 	
-	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead){
+	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead && defenderStats.GetTeamID() != ownerTeamID){
 		// Calculation:
 		var dmg = calc.CalculateDamage(attack, defenderStats.GetDefensePower());
 		var flinch = calc.CalculateFlinchDuration(impact, defenderStats.GetResilience());

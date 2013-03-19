@@ -20,9 +20,11 @@ var currentSceneInfo;
 
 var enemyList	: Array;
 
+var dataCollector 	: DataCollector;
+
 // Global resources
-var rm : ResourceManager;
-var unitType : GameObject[];	// For now the unit type has to defined through mono object behaviours,
+var rm 				: ResourceManager;
+var unitType 		: GameObject[];	// For now the unit type has to defined through mono object behaviours,
 								//	since we can't link to the prefabs through code.
 
 // Settings of the stage
@@ -31,6 +33,8 @@ var sceneList : Array;
 function Awake() {
 	rm = ResourceManager.GetResourceManager();
 	rm.SetCurrentActiveStageDirector(gameObject);
+	dataCollector = new DataCollector();
+	rm.SetCurrentActiveDataCollector(dataCollector);
 }
 
 function Start () {
@@ -49,6 +53,7 @@ function Start () {
 	
 	//For testing:
 	playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
+	playerCharacter.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_PLAYER);
 	
 	sceneTrigger.GetComponent(SceneTrigger).director = gameObject;
 	sceneTrigger.GetComponent(SceneTrigger).target = playerCharacter.gameObject;
@@ -92,6 +97,7 @@ function SpawnEnemiesForCurrentScene() {
 		for (var i=0; i<enemyEntry.Value; i++){
 			var spawnPt = (Random.value < 0.5? spawnPointLeft: spawnPointRight);
 			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
+			unit.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_AI_ENEMY);
 			unit.GetComponent(SampleAIController).patrol = false; // temporary
 			enemyList.Add(unit);
 			
@@ -118,7 +124,7 @@ function LockScene(isLock) {
 // Event handler... not really
 function ReportDeath(casualty) {
 	if (casualty.GetInstanceID() == playerCharacter.gameObject.GetInstanceID()) {
-		Debug.Log("here");
+		//Debug.Log("here");
 		mainCamScript.ClearFocus();
 		// Apply player death logic
 	} else {

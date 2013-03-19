@@ -8,11 +8,13 @@ var armEnd	 : float;
 var attack	: float;
 var impact 	: float;
 var knockback : Vector3;
+var ownerTeamID : int;
 
 var oldTarget : Array = new Array();
 
 var trailEmitterBase : GameObject;
 var trailEmitter;
+
 
 function Start () {
 	calc = Calculator.GetCalculator();
@@ -24,12 +26,13 @@ function Start () {
 	armStart = armEnd = 0;
 }
 
-function SetWeaponArm(armStart, armEnd, attack, impact, knockback) {
+function SetWeaponArm(armStart, armEnd, attack, impact, knockback, ownerTeamID) {
 	this.armStart 	= armStart;
 	this.armEnd 	= armEnd;
 	this.attack 	= attack;
 	this.impact 	= impact;
 	this.knockback 	= knockback;
+	this.ownerTeamID= ownerTeamID;
 	oldTarget.Clear();
 }
 
@@ -37,7 +40,7 @@ function CheckHit(other : Collider) {
 	var defenderStats = other.GetComponent(CharacterStatus);
 	var defenderController = other.GetComponent(CharacterActionController);
 	
-	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead){
+	if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead && defenderStats.GetTeamID() != ownerTeamID){
 		if (Time.time < armEnd && Time.time > armStart) {
 			// Calculation:
 			var dmg = calc.CalculateDamage(attack, defenderStats.GetDefensePower());
@@ -70,8 +73,7 @@ function OnCollisionEnter (collision : Collision) {
 
 // Helper functions.. possibly have to write my own array class
 function Contains(arr : Array, elem) : boolean {
-	var i;
-	for (i=0; i<arr.length; i++) {
+	for (var i=0; i<arr.length; i++) {
 		if (arr[i].GetInstanceID() == elem.GetInstanceID()) return true;
 	}
 	return false;
