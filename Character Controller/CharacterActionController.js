@@ -453,10 +453,12 @@ function ApplyFlinch(duration) {
 		//Debug.Log(duration);
 		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
 	
-		var hitFx = Instantiate(Resources.Load("Splatter"), transform.Find(hitLocation).position, Quaternion.identity);
-		hitFx.transform.parent = transform;
-		Destroy(hitFx, hitEffectDuration);
-		
+		if(transform.Find(hitLocation) != null)
+		{
+			var hitFx = Instantiate(Resources.Load("Splatter"), transform.Find(hitLocation).position, Quaternion.identity);
+			hitFx.transform.parent = transform;
+			Destroy(hitFx, hitEffectDuration);
+		}
 		ResetAction();
 		animation.CrossFade("flinch", duration);
 	}
