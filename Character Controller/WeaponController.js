@@ -1,5 +1,6 @@
 var parent : Transform;
 
+@System.NonSerialized
 var calc : Calculator;
 
 var armStart : float;
@@ -10,14 +11,16 @@ var impact 	: float;
 var knockback : Vector3;
 var ownerTeamID : int;
 
+var recordID	: int;
+
 var oldTarget : Array = new Array();
 
 var trailEmitterBase : GameObject;
 var trailEmitter;
 
-
 function Start () {
 	calc = Calculator.GetCalculator();
+	recordID = -1;
 	Physics.IgnoreCollision(collider, parent.collider);
 	
 	if (trailEmitterBase != null) 
@@ -34,6 +37,10 @@ function SetWeaponArm(armStart, armEnd, attack, impact, knockback, ownerTeamID) 
 	this.knockback 	= knockback;
 	this.ownerTeamID= ownerTeamID;
 	oldTarget.Clear();
+}
+
+function SetRecordID(id) {
+	recordID = id;
 }
 
 function CheckHit(other : Collider) {
@@ -56,6 +63,8 @@ function CheckHit(other : Collider) {
 			
 			oldTarget.Add(other);
 			
+			// Record the hit:
+			ResourceManager.GetResourceManager().GetCurrentActiveDataCollector().RegisterSuccessfulAttack(recordID);
 		}
 	}
 	

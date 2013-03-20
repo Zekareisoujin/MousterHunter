@@ -23,9 +23,10 @@ var enemyList	: Array;
 var dataCollector 	: DataCollector;
 
 // Global resources
+@System.NonSerialized
 var rm 				: ResourceManager;
 var unitType 		: GameObject[];	// For now the unit type has to defined through mono object behaviours,
-								//	since we can't link to the prefabs through code.
+									//	since we can't link to the prefabs through code.
 
 // Settings of the stage
 var sceneList : Array;
@@ -33,7 +34,7 @@ var sceneList : Array;
 function Awake() {
 	rm = ResourceManager.GetResourceManager();
 	rm.SetCurrentActiveStageDirector(gameObject);
-	dataCollector = new DataCollector();
+	dataCollector = GetComponent(DataCollector);
 	rm.SetCurrentActiveDataCollector(dataCollector);
 }
 
@@ -44,12 +45,14 @@ function Start () {
 	sceneTrigger = Instantiate(sceneTrigger, Vector3.zero, Quaternion.identity);
 	mainCam = Camera.main;
 	mainCamScript = mainCam.GetComponent(CameraFocus);
+	dataCollector.Initialize();
 	
 	// Set up player character
 	playerCharacterName = rm.GetSelectedCharacter();
 	//playerCharacter = Instantiate... blah blah, later
 	
 	enemyList = new Array();
+	dataCollector.StageStart();
 	
 	//For testing:
 	playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
@@ -65,7 +68,7 @@ function Start () {
 function ForwardScene() {
 	currentSceneIdx++;
 	if (currentSceneIdx >= sceneList.length) {
-		// Game over, congratulations
+		GameOver();
 	}
 	
 	InitializeCurrentScene();
@@ -119,6 +122,10 @@ function LockScene(isLock) {
 		mainCamScript.LockCamera(boundLeft, boundRight);
 	}else
 		mainCamScript.UnlockCamera();
+}
+
+function GameOver() {
+	dataCollector.StageEnd();
 }
 
 // Event handler... not really

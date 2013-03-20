@@ -73,16 +73,17 @@ class ResourceManager {
 		// Warrior-specific skills
 		var smash 	= new CharacterAction("Trinity Smash", 1.2, 1.5, 2, "smash", "smashRecover", weapon1, 0.07, "idle", 0.0);
 		var spin 	= new CharacterAction("Whirlwind", 1.1, 0.9, 2, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
-		var thrust 	= new CharacterAction("Gale Maw", 0.9, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.02, "idle", 0.4);
+		var thrust 	= new CharacterAction("Tempest Strike", 1.2, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.02, "idle", 0.0);
 		var wwind	= new CharacterAction("Whirlwind", 0.75, 1.5, 1, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
 		smash.movement 	= Vector3(2.0, 10.0, 0);
 		smash.knockback = Vector3(3.0, 3.0, 0);
-		smash.AddActionEffect("Elements/FlameAxe", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip");
-		smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
+		smash.AddActionEffect("Elements/TrinityBomb", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip");
+		//smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
 		spin.knockback 	= Vector3(1.0, 0, 0);
-		thrust.movement = Vector3(10.0, 0, 0);
+		spin.movement 	= Vector3(10.0, 2.0, 0);
+		thrust.movement = Vector3(8.0, 12.0, 0);
 		thrust.knockback = Vector3(2.0, 0, 0);
-		thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
+		//thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
 		wwind.movement = Vector3(5.0, 0, 0);
 		wwind.knockback = Vector3(2.0, 0, 0);
 		wwind.keepMomentum = true;
@@ -91,8 +92,8 @@ class ResourceManager {
 		warriorActionList.Add(actionAttack);
 		warriorActionList.Add(actionAttack2);
 		warriorActionList.Add(smash);
-		warriorActionList.Add(spin);
 		warriorActionList.Add(thrust);
+		warriorActionList.Add(spin);
 		warriorActionList.Add(wwind);
 		
 		// Wizard-specific skills

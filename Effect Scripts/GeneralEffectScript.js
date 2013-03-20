@@ -1,5 +1,6 @@
 var parent : Transform;
 
+@System.NonSerialized
 var calc : Calculator;
 
 var attack	: float;
@@ -7,13 +8,15 @@ var impact 	: float;
 var knockback : Vector3;
 var ownerTeamID : int;
 
+var recordID	: int;
+
 var oldTarget : Array = new Array();
 
 var lifetime : float;
 
 function Start () {
 	calc = Calculator.GetCalculator();
-	//Debug.Log("destroyed in " + lifetime);
+	recordID = -1;
 	Destroy(gameObject, lifetime);
 }
 
@@ -28,6 +31,10 @@ function SetEffectArm(attack, impact, knockback, ownerTeamID) {
 	this.knockback 	= knockback;
 	this.ownerTeamID= ownerTeamID;
 	oldTarget.Clear();
+}
+
+function SetRecordID(id) {
+	recordID = id;
 }
 
 function CheckHit(other : Collider) {
@@ -48,6 +55,9 @@ function CheckHit(other : Collider) {
 		defenderController.ApplyKnockback(direction, knockback);
 		
 		oldTarget.Add(other);
+		
+		// Record the hit:
+		ResourceManager.GetResourceManager().GetCurrentActiveDataCollector().RegisterSuccessfulAttack(recordID);
 	}
 	
 }

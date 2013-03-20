@@ -1,6 +1,10 @@
 // Global resources
+@System.NonSerialized
 protected var rm		: ResourceManager;
+@System.NonSerialized
 protected var director 	: StageDirector;
+@System.NonSerialized
+protected var dataCollector 	: DataCollector;
 
 var characterType : String;
 
@@ -171,6 +175,7 @@ function Awake() {
 
 function Start() {
 	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
+	dataCollector = rm.GetCurrentActiveDataCollector();
 	
 	if (characterType != ""){
 		actionList = rm.GetActionList()[characterType];
@@ -198,7 +203,7 @@ function UpdateStatus() {
 	currentState.isControllable = !currentState.isFlinching && !currentState.isDead;
 }
 
-// Handles attack action
+// Handles all actions
 function UpdateAttack() {
 	if (actionCfg.orderedAction >= 0 && currentState.isControllable) {
 		currentState.isActing = true;
@@ -223,8 +228,15 @@ function UpdateAttack() {
 						prepareEffect.transform.parent = spawnPoint.transform;
 					}
 					
+					var recordID;
+					// Checking if its a skill (>=2) or an attack. In the future we'll have a variable in the action class indicating the type of action
+					if (actionCfg.orderedAction >= 2)
+						recordID = dataCollector.RegisterSkillMade(ownerTeamID);
+					else
+						recordID = dataCollector.RegisterAttackMade(ownerTeamID);
+					
 					var castDelay = nextAction.prepareDuration * actionCfg.chainCastReduction[actionCfg.chainLength];
-					StartCoroutine(WaitForActionPreparationEnd(nextAction, castDelay));
+					StartCoroutine(WaitForActionPreparationEnd(nextAction, castDelay, recordID));
 				}
 			}
 		}
@@ -237,7 +249,7 @@ function UpdateAttack() {
 		actionCfg.isArmed = false;*/
 }
 
-function WaitForActionPreparationEnd(action, length) {
+function WaitForActionPreparationEnd(action, length, recordID) {
 	yield WaitForSeconds(length);
 	
 	if (prepareEffect != null)
@@ -246,15 +258,12 @@ function WaitForActionPreparationEnd(action, length) {
 	if (currentState.isActing) {
 		animation.CrossFade(action.animationStart);
 		
-		if (action.actionEffect) {
-		var spawnPoint = transform.Find(action.actionSpawnPoint);
-			actionEffect = Instantiate(Resources.Load(action.actionPath), spawnPoint.position, Quaternion.identity);
-			actionEffect.transform.parent = spawnPoint.transform;
-		}
+		
 		
 		//groundMovement.walkSpeed += action.movement.x * groundMovement.facingDirection.x;
 		//airMovement.airSpeed += action.movement.y;
 		groundMovement.walkSpeed = action.movement.x * groundMovement.facingDirection.x;
+		//if (controller.isGrounded)
 		airMovement.airSpeed = action.movement.y;
 		
 		if (action.keepMomentum) {
@@ -271,6 +280,7 @@ function WaitForActionPreparationEnd(action, length) {
 			if (permanentWeapon[weaponIndex] != null) {
 				var weapon = permanentWeapon[weaponIndex].GetComponent(WeaponController);
 				weapon.SetWeaponArm(Time.time + delay, Time.time + duration, boostedAttack, stats.GetImpact() * action.impact, action.knockback, ownerTeamID);
+				weapon.SetRecordID(recordID);
 			}
 		}
 		//if (weapon != null)
@@ -278,12 +288,24 @@ function WaitForActionPreparationEnd(action, length) {
 		
 		StartCoroutine(WaitForActionEnd(action, duration));
 		
+		if (action.actionEffect) {
+		var spawnPoint = transform.Find(action.actionSpawnPoint);
+			actionEffect = Instantiate(Resources.Load(action.actionPath), spawnPoint.position, Quaternion.identity);
+			actionEffect.transform.parent = spawnPoint.transform;
+			var effectScript = actionEffect.GetComponent(GeneralEffectScript);
+			if (effectScript != null) {
+				effectScript.SetParent(this.transform);
+				effectScript.SetEffectArm(boostedAttack, boostedImpact, action.knockback, ownerTeamID);
+				effectScript.SetRecordID(recordID);
+			}
+		}
+		
 		if (action.extraEffect){
 			var effDelay = action.effectDelay;
 			if (action.effectDelay < 0)
 				effDelay = animation[action.animationStart].length/animationSpeed;
 			
-			StartCoroutine(SpawnEffect(action, effDelay, boostedAttack, boostedImpact, action.knockback));
+			StartCoroutine(SpawnEffect(action, effDelay, boostedAttack, boostedImpact, action.knockback, recordID));
 		}
 	}
 }
@@ -291,7 +313,8 @@ function WaitForActionPreparationEnd(action, length) {
 function WaitForActionEnd(action, length) {
 	yield WaitForSeconds(length);
 	
-	Destroy(actionEffect);
+	if (actionEffect != null)
+		Destroy(actionEffect);
 	actionCfg.isPerformingAction = false;
 	if (currentState.isActing) {
 		actionCfg.chainEnd = Time.time + actionCfg.chainPeriod;
@@ -319,13 +342,14 @@ function ResetAction() {
 	actionCfg.chainLength = 0;
 }
 
-function SpawnEffect(action, delay, effAttack, effImpact, effKnockback) {
+function SpawnEffect(action, delay, effAttack, effImpact, effKnockback, recordID) {
 	yield WaitForSeconds(delay);
 	
 	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
 	var effectScript = effect.GetComponent(GeneralEffectScript);
 	effectScript.SetParent(this.transform);
 	effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
+	effectScript.SetRecordID(recordID);
 }
 
 function UpdateSkill()

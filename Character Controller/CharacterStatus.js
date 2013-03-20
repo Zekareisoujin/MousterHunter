@@ -32,6 +32,7 @@ var attackFrequency : float = 0.1;
 
 // GUI component
 var lifeBarObject : GameObject;
+@System.NonSerialized
 var lifeBarScript : GUIBar;
 
 // Status
@@ -41,12 +42,17 @@ var isAlive : boolean; //fk this shit
 var teamID 	: int;
 
 // Global resources
+@System.NonSerialized
 protected var rm		: ResourceManager;
+@System.NonSerialized
 protected var director 	: StageDirector;
+@System.NonSerialized
+protected var dataCollector : DataCollector;
 
 function Start () {
 	rm = ResourceManager.GetResourceManager();
 	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
+	dataCollector = rm.GetCurrentActiveDataCollector();
 	
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
 	currentLife = maxLife;
@@ -112,6 +118,9 @@ function ApplyDamage(dmg) {
 			var displayVal = currentLife / maxLife;	
 			lifeBarScript.SetDisplayValue(displayVal);
 		}
+		
+		// Record the damage
+		dataCollector.RegisterDamage(dmg, teamID);
 	}
 }
 

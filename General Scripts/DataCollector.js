@@ -1,4 +1,4 @@
-class DataCollector {
+class DataCollector extends MonoBehaviour{
 	
 	/*
 	 * Using <underscore?> convention for variable name over here
@@ -22,15 +22,30 @@ class DataCollector {
 	// Inputs related
 	var keystroke_made	: int;	// Change to GetKeyDown later
 	
+	// Identity of players to be recorded:
+	var player_recorded : int;
+	
+	var rm : ResourceManager;
+	
 	/*
 	 * Methods
 	 */
-	function DataCollector() {
+	function Start() {
+		rm = ResourceManager.GetResourceManager();
 	}
-	
+	 
 	function Initialize() {
 		attack_id_hit = new Hashtable();
-		// set the rest to 0 here
+		
+		attack_made = 0;
+		attack_made_successful = 0;
+		attack_id_current = 0;
+		damage_taken = 0;
+		damage_dealt = 0;
+		keystroke_made = 0;
+		
+		// Temporary: right now we're only recording data on us
+		player_recorded = rm.TEAM_ID_PLAYER;
 	}
 	
 	function StageStart() {
@@ -41,31 +56,34 @@ class DataCollector {
 		time_end = Time.time;
 	}
 	
-	function RegisterAttackMade() : int {
-		attack_made++;
-		return attack_id_current++;
+	function RegisterAttackMade(player) : int {
+		if (player == player_recorded) {
+			attack_made++;
+			return attack_id_current++;
+		}else
+			return -1;	// -1 is the non-registered attacks
 	}
 	
-	function RegisterSkillMade() : int {
-		skill_used++;
-		return RegisterAttackMade();
+	function RegisterSkillMade(player) : int {
+		if (player == player_recorded) {
+			skill_used++;
+			return RegisterAttackMade(player);
+		}else
+			return -1;
 	}
 	
 	function RegisterSuccessfulAttack(attackID) {
-		if (!attack_id_hit.Contains(attackID)){
+		if (!attack_id_hit.Contains(attackID) && attackID != -1){
 			attack_made_successful++;
 			attack_id_hit.Add(attackID, true);
 		}
 	}
 	
-	// Against enemy (AI)
-	function RegisterDamageDealt(damage) {
-		damage_dealt += damage;
-	}
-	
-	// From enemy (AI) & traps
-	function RegisterDamageTaken(damage) {
-		damage_taken += damage;
+	function RegisterDamage(damage, player) {
+		if (player == player_recorded)
+			damage_taken += damage;
+		else
+			damage_dealt += damage;
 	}
 	
 	function RegisterKeyStrokeMade() {
