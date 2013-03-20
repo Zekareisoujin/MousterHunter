@@ -39,6 +39,10 @@ function SetWeaponArm(armStart, armEnd, attack, impact, knockback, ownerTeamID) 
 	oldTarget.Clear();
 }
 
+function Disarm() {
+	armEnd = 0;
+}
+
 function SetRecordID(id) {
 	recordID = id;
 }

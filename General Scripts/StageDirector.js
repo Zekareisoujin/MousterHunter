@@ -101,9 +101,11 @@ function SpawnEnemiesForCurrentScene() {
 			var spawnPt = (Random.value < 0.5? spawnPointLeft: spawnPointRight);
 			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
 			unit.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_AI_ENEMY);
-			unit.GetComponent(SampleAIController).patrol = false; // temporary
-			enemyList.Add(unit);
 			
+			var unitAI = unit.GetComponent(StandardAIController);
+			unitAI.SetTarget(playerCharacter.gameObject);
+			enemyList.Add(unit);
+			//unit.GetComponent(SampleAIController).patrol = false; // temporary			
 		}
 	}
 }

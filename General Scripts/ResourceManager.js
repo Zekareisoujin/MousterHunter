@@ -64,7 +64,7 @@ class ResourceManager {
 		weapon12.Add(1);
 		
 		// General melee skills that everyone has
-		var actionAttack 	= new CharacterAction("Attack", 1.0, 1.0, 1, "attack", "attackRecover", weapon1, 0.05, "idle", 0.0);
+		var actionAttack 	= new CharacterAction("Attack", 1.0, 1.0, 1, "attack", "attackRecover", weapon1, 0.12, "idle", 0.0);
 		var actionAttack2 	= new CharacterAction("Attack 2", 1.1, 1.1, 1, "attack2", "attack2Recover", weapon1, 0.05, "idle", 0.0);
 		actionAttack.knockback  = Vector3(1.0, 1.0, 0);
 		actionAttack2.movement 	= Vector3(5.0, 0, 0);
@@ -73,7 +73,7 @@ class ResourceManager {
 		// Warrior-specific skills
 		var smash 	= new CharacterAction("Trinity Smash", 1.2, 1.5, 2, "smash", "smashRecover", weapon1, 0.07, "idle", 0.0);
 		var spin 	= new CharacterAction("Whirlwind", 1.1, 0.9, 2, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
-		var thrust 	= new CharacterAction("Tempest Strike", 1.2, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.02, "idle", 0.0);
+		var thrust 	= new CharacterAction("Tempest Strike", 1.2, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.0, "idle", 0.0);
 		var wwind	= new CharacterAction("Whirlwind", 0.75, 1.5, 1, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
 		smash.movement 	= Vector3(2.0, 10.0, 0);
 		smash.knockback = Vector3(3.0, 3.0, 0);

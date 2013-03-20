@@ -1,7 +1,7 @@
-var parent : Transform;
-
 @System.NonSerialized
 var calc : Calculator;
+
+var parent : Transform;
 
 var attack	: float;
 var impact 	: float;

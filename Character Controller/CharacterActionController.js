@@ -201,6 +201,11 @@ function Start() {
 function UpdateStatus() {
 	currentState.isFlinching = (Time.time < currentState.flinchDurationEnd);
 	currentState.isControllable = !currentState.isFlinching && !currentState.isDead;
+	if (!currentState.isControllable) {
+		for (weapon in permanentWeapon) {
+			weapon.GetComponent(WeaponController).Disarm();
+		}
+	}
 }
 
 // Handles all actions
@@ -345,11 +350,13 @@ function ResetAction() {
 function SpawnEffect(action, delay, effAttack, effImpact, effKnockback, recordID) {
 	yield WaitForSeconds(delay);
 	
-	var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
-	var effectScript = effect.GetComponent(GeneralEffectScript);
-	effectScript.SetParent(this.transform);
-	effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
-	effectScript.SetRecordID(recordID);
+	if (currentState.isActing) {
+		var effect = Instantiate(Resources.Load(action.effectPath), transform.Find(action.effectSpawnPoint).position, Quaternion.identity);
+		var effectScript = effect.GetComponent(GeneralEffectScript);
+		effectScript.SetParent(this.transform);
+		effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
+		effectScript.SetRecordID(recordID);
+	}
 }
 
 function UpdateSkill()

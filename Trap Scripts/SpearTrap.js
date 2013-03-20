@@ -11,7 +11,8 @@ class SpearTrap extends GeneralEffectScript
 	
 	
 	override function Start () {
-	
+		calc = Calculator.GetCalculator();
+		recordID = -1;
 	}
 	
 	override function Update () {
