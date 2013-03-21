@@ -9,7 +9,7 @@ class ResourceManager {
 	// Stage related variable
 	private static var StageDirectory : Hashtable;
 	private static var selectedStage : String;
-	private static var selectedCharacter : String;
+	private static var selectedCharacter : int; // unitTypeID
 	private static var activeStageDirector : GameObject;
 	private static var activeDataCollector : DataCollector;
 	
@@ -310,7 +310,7 @@ class ResourceManager {
 		return StageDirectory[stage];
 	}
 	
-	function SetSelectedCharacter(character : String){
+	function SetSelectedCharacter(character : int){
 		selectedCharacter = character;
 	}
 	

@@ -14,6 +14,7 @@ var permanentWeapon	: GameObject[];
 
 var animationSpeed = 1.0;
 var ownerTeamID		: int;
+var unitTypeID		: int;
 
 // Other components:
 protected var controller;

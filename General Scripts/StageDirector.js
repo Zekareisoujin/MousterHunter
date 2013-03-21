@@ -48,7 +48,7 @@ function Start () {
 	dataCollector.Initialize();
 	
 	// Set up player character
-	playerCharacterName = rm.GetSelectedCharacter();
+	//playerCharacterName = rm.GetSelectedCharacter();
 	//playerCharacter = Instantiate... blah blah, later
 	
 	enemyList = new Array();
