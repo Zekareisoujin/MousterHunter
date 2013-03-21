@@ -29,10 +29,12 @@ var maxSpd = 2;
 var selected : int;
 var character : GameObject;
 
+var CharacterName = "CharName";
+
 function OnGUI () {
 	GUI.BeginGroup ( Rect (pos.x, pos.y, dim.x + textDimx + textPosx, dim.y*6 + 10));
 	
-	GUI.Box (Rect (0, 0, dim.x + textDimx + textPosx, displayHeight*6 + 10), "CharName");
+	GUI.Box (Rect (0, 0, dim.x + textDimx + textPosx, displayHeight*6 + 10), CharacterName);
 	
 	
 	GUI.Label (Rect (textPosx, 0+1*displayHeight, textDimx, displayHeight), "Attack");
@@ -77,5 +79,7 @@ function Update () {
 	displayImp = character.GetComponent(CharacterStatus).GetImpact() / maxImp;
 	displayRes = character.GetComponent(CharacterStatus).GetResilience() / maxRes;
 	displaySpd = character.GetComponent(CharacterStatus).GetSpeed() / maxSpd;
+	
+	CharacterName = character.GetComponent(CharacterActionController).characterType;
 	
 }
