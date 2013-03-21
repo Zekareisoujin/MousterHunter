@@ -20,6 +20,14 @@ var displayImp = 0.8;
 var displayRes = 0.8;
 var displaySpd = 0.8;
 
+var maxAtt = 100;
+var maxDef = 100;
+var maxImp = 100;
+var maxRes = 100;
+var maxSpd = 2;
+
+var selected : int;
+var character : GameObject;
 
 function OnGUI () {
 	GUI.BeginGroup ( Rect (pos.x, pos.y, dim.x + textDimx + textPosx, dim.y*6 + 10));
@@ -61,5 +69,13 @@ function Start () {
 }
 
 function Update () {
-
+	selected = transform.GetComponent(CharacterSelect).selected;
+	character = transform.GetComponent(CharacterSelect).character[selected];
+	
+	displayAtt = character.GetComponent(CharacterStatus).GetAttackPower() / maxAtt;
+	displayDef = character.GetComponent(CharacterStatus).GetDefensePower() / maxDef;
+	displayImp = character.GetComponent(CharacterStatus).GetImpact() / maxImp;
+	displayRes = character.GetComponent(CharacterStatus).GetResilience() / maxRes;
+	displaySpd = character.GetComponent(CharacterStatus).GetSpeed() / maxSpd;
+	
 }
