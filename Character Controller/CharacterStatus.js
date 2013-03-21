@@ -51,7 +51,8 @@ protected var dataCollector : DataCollector;
 
 function Start () {
 	rm = ResourceManager.GetResourceManager();
-	director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
+	if (rm.GetCurrentActiveStageDirector() != null)
+		director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	dataCollector = rm.GetCurrentActiveDataCollector();
 	
 	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;

@@ -48,11 +48,10 @@ function Start () {
 	dataCollector.Initialize();
 	
 	// Set up player character
-	playerCharacterName = rm.GetSelectedCharacter();
+	//playerCharacterName = rm.GetSelectedCharacter();
 	//playerCharacter = Instantiate... blah blah, later
 	
 	enemyList = new Array();
-	dataCollector.StageStart();
 	
 	//For testing:
 	playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
@@ -60,7 +59,13 @@ function Start () {
 	
 	sceneTrigger.GetComponent(SceneTrigger).director = gameObject;
 	sceneTrigger.GetComponent(SceneTrigger).target = playerCharacter.gameObject;
+	LockScene(false);
 	
+	StartGame();
+}
+
+function StartGame() {
+	dataCollector.StageStart();
 	currentSceneIdx = 0;
 	InitializeCurrentScene();
 }
@@ -84,7 +89,7 @@ function InitializeCurrentScene() {
 	// Right now let's just spawn things right at the boundary
 	spawnPointLeft = boundLeft;
 	spawnPointRight = boundRight;
-	sceneTrigger.transform.position = (boundLeft + boundRight) / 2;
+	sceneTrigger.transform.position = boundLeft + (boundRight - boundLeft) / 3;
 	sceneTrigger.GetComponent(SceneTrigger).running = true;
 }
 
@@ -100,6 +105,7 @@ function SpawnEnemiesForCurrentScene() {
 		for (var i=0; i<enemyEntry.Value; i++){
 			var spawnPt = (Random.value < 0.5? spawnPointLeft: spawnPointRight);
 			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
+			unit.GetComponent(CharacterActionController).movementLane = (Random.value - 0.5) / 2;
 			unit.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_AI_ENEMY);
 			
 			var unitAI = unit.GetComponent(StandardAIController);

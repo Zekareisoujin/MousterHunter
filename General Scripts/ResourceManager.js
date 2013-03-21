@@ -9,7 +9,7 @@ class ResourceManager {
 	// Stage related variable
 	private static var StageDirectory : Hashtable;
 	private static var selectedStage : String;
-	private static var selectedCharacter : String;
+	private static var selectedCharacter : int; // unitTypeID
 	private static var activeStageDirector : GameObject;
 	private static var activeDataCollector : DataCollector;
 	
@@ -232,10 +232,51 @@ class ResourceManager {
 		standardStage.Add(stdsc1);
 		
 		stdsc2 = new SceneInfo(1, 2);
-		stdsc2.AddEnemy(UNIT_TYPE_SOLDIER, 4);
-		stdsc2.AddEnemy(UNIT_TYPE_ARCHER, 2);
-		stdsc2.AddEnemy(UNIT_TYPE_BRUTE, 1);
+		stdsc2.AddEnemy(UNIT_TYPE_SOLDIER, 5);
+		stdsc2.AddEnemy(UNIT_TYPE_ARCHER, 1);
 		standardStage.Add(stdsc2);
+		
+		stdsc3 = new SceneInfo(2, 3);
+		stdsc3.AddEnemy(UNIT_TYPE_SOLDIER, 7);
+		stdsc3.AddEnemy(UNIT_TYPE_ARCHER, 3);
+		standardStage.Add(stdsc3);
+		
+		stdsc4 = new SceneInfo(3, 4);
+		stdsc4.AddEnemy(UNIT_TYPE_SOLDIER, 1);
+		stdsc4.AddEnemy(UNIT_TYPE_ARCHER, 5);
+		standardStage.Add(stdsc4);
+		
+		stdsc5 = new SceneInfo(4, 5);
+		stdsc5.AddEnemy(UNIT_TYPE_SOLDIER, 5);
+		stdsc5.AddEnemy(UNIT_TYPE_BRUTE, 2);
+		standardStage.Add(stdsc5);
+		
+		stdsc6 = new SceneInfo(5, 6);
+		stdsc6.AddEnemy(UNIT_TYPE_ARCHER, 5);
+		stdsc6.AddEnemy(UNIT_TYPE_BRUTE, 3);
+		standardStage.Add(stdsc6);
+		
+		stdsc7 = new SceneInfo(6, 7);
+		stdsc7.AddEnemy(UNIT_TYPE_ARCHER, 2);
+		stdsc7.AddEnemy(UNIT_TYPE_BRUTE, 5);
+		standardStage.Add(stdsc7);
+		
+		stdsc8 = new SceneInfo(7, 8);
+		stdsc8.AddEnemy(UNIT_TYPE_SOLDIER, 10);
+		stdsc8.AddEnemy(UNIT_TYPE_ARCHER, 10);
+		standardStage.Add(stdsc8);
+		
+		stdsc9 = new SceneInfo(8, 9);
+		stdsc9.AddEnemy(UNIT_TYPE_SOLDIER, 8);
+		stdsc9.AddEnemy(UNIT_TYPE_ARCHER, 4);
+		stdsc9.AddEnemy(UNIT_TYPE_BRUTE, 4);
+		standardStage.Add(stdsc9);
+		
+		stdsc10 = new SceneInfo(10, 11);
+		stdsc10.AddEnemy(UNIT_TYPE_SOLDIER, 12);
+		stdsc10.AddEnemy(UNIT_TYPE_ARCHER, 8);
+		stdsc10.AddEnemy(UNIT_TYPE_BRUTE, 6);
+		standardStage.Add(stdsc10);
 		
 		StageDirectory.Add("Standard Stage", standardStage);
 		
@@ -269,7 +310,7 @@ class ResourceManager {
 		return StageDirectory[stage];
 	}
 	
-	function SetSelectedCharacter(character : String){
+	function SetSelectedCharacter(character : int){
 		selectedCharacter = character;
 	}
 	

@@ -54,7 +54,8 @@ function Update() {
 		distanceFromTargetUnit = 1000; // really big number
 	distanceFromTargetLocation = targetLocation - transform.position.x;
 	
-	AssessDestination();
+	if (targetUnit != null)
+		AssessDestination();
 	if (Time.time > nextActionAssessment)
 		AssessAction();
 	
