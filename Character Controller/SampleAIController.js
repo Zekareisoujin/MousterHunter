@@ -8,7 +8,7 @@ var patrolPeriod = 0.5;
 
 var isActive = false;
 
-var enemy : Transform;
+var enemy : GameObject;
 
 var attackRange = 0.5;
 
@@ -25,7 +25,7 @@ function Start () {
 function Update () {
 	if (isActive && enemy != null) {
 		time += Time.deltaTime;
-		var diffx = enemy.position.x - transform.position.x;
+		var diffx = enemy.transform.position.x - transform.position.x;
 		
 		if (patrol) {
 			if (controller.horizontalAxisRaw == 0)

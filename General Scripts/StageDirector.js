@@ -1,12 +1,13 @@
 // Stage variable
 var stageName;
 var boundaries 	: GameObject[];
+var playerCharacterSpawnPoint : GameObject;
 var sceneTrigger: GameObject;
 var mainCam		: Camera;
 var mainCamScript: CameraFocus;
 
 var playerCharacterName : String;
-var playerCharacter	: Transform;
+var playerCharacter	: GameObject;
 
 var boundLeftIdx;
 var boundRightIdx;
@@ -47,14 +48,12 @@ function Start () {
 	mainCamScript = mainCam.GetComponent(CameraFocus);
 	dataCollector.Initialize();
 	
-	// Set up player character
-	//playerCharacterName = rm.GetSelectedCharacter();
-	//playerCharacter = Instantiate... blah blah, later
+	SpawnPlayerCharacter();
 	
 	enemyList = new Array();
 	
 	//For testing:
-	playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
+	//playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
 	playerCharacter.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_PLAYER);
 	
 	sceneTrigger.GetComponent(SceneTrigger).director = gameObject;
@@ -62,6 +61,18 @@ function Start () {
 	LockScene(false);
 	
 	StartGame();
+}
+
+function SpawnPlayerCharacter() {
+	var id = rm.GetSelectedCharacter();
+	playerCharacter = Instantiate(unitType[id], playerCharacterSpawnPoint.transform.position, Quaternion.identity);
+	playerCharacterName = playerCharacter.GetComponent(CharacterActionController).name;
+	
+	mainCam.transform.position = playerCharacter.transform.position;
+	mainCamScript.target = playerCharacter;
+	
+	var guiLife = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
+	playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
 }
 
 function StartGame() {

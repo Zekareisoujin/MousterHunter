@@ -108,7 +108,7 @@ class ResourceManager {
 		thunder2.knockback = Vector3(2.0, 2.0, 0);
 		thunder2.AddActionEffect("Elements/FlameAxe", "root/spine/chest/shoulder_l/elbow_l/wrist_l/hand_l");
 		thunder2.AddExtraEffect("Elements/Fireball", "root/spine/chest/shoulder_l/elbow_l/wrist_l/hand_l", 0.1);
-		tornado.knockback = Vector3(3.0, 4.0, 0);
+		tornado.knockback = Vector3(6.0, 8.0, 0);
 		tornado.AddPrepareEffect("Elements/CastingCircle", "origin");
 		tornado.AddExtraEffect("Elements/Tornado", "origin", 0);
 		meteor.knockback = Vector3(2.0, 3.5, 0);

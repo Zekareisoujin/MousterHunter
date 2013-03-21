@@ -4,7 +4,7 @@ var delay = 1;
 var effectTransform = Vector3(5, 10, 0);
 var reshoot = 5;
 
-var enemy : Transform;
+var enemy : GameObject;
 
 private var shoot = false;
 private var reload = false;

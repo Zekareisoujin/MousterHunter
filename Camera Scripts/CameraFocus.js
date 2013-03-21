@@ -1,6 +1,6 @@
 
 // Target of focus
-var target : Transform;
+var target : GameObject;
 var onFocus: boolean;
 
 // Relative position of the camera to the target
@@ -28,7 +28,7 @@ function Start () {
 function Update () {
 	if (onFocus) {
 		var finalPosition;
-		finalPosition = target.position + relativePosition;
+		finalPosition = target.transform.position + relativePosition;
 		finalPosition.y = Mathf.Min(Mathf.Max(finalPosition.y, boundLower), boundUpper);
 		
 		if (horizontalLock) {
