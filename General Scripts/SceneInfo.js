@@ -18,7 +18,8 @@ class SceneInfo {
 		leftBoundIndex = leftIdx;
 		rightBoundIndex = rightIdx;
 		enemyNumber = 0;
-		enemyRatings = ResourceManager.GetResourceManager().GetDifficultyRatings();
+		//enemyRatings = ResourceManager.GetResourceManager().GetDifficultyRatings();
+		enemyRatings = ResourceManager.GetDifficultyRatings();
 		totalDifficultyRating = 0;
 		quantityRatingBase = 10;
 	}

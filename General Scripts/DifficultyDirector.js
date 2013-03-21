@@ -15,6 +15,11 @@ var mainCharacter;
 var estimatedDamageTaken : Array;
 
 var totalDifficultyRating;
+var currentDifficultyLevel : float;
+
+// To adjust difficulty level
+var damageTakenSoFar;
+var dampenerConstant;
 
 function Awake() {
 	rm = ResourceManager.GetResourceManager();
@@ -38,10 +43,24 @@ function Initialize() {
 	for (scene in sceneList)
 		estimatedDamageTaken.Add(maxLife * scene.GetDifficultyRating() / totalDifficultyRating);
 	
-	for (dmg in estimatedDamageTaken)
-		Debug.Log(dmg);
+	/*for (dmg in estimatedDamageTaken)
+		Debug.Log(dmg);*/
+	currentDifficultyLevel = 1.00;
+	damageTakenSoFar = 0.0;
+	dampenerConstant = 1.00; //To be found out using experiment
 }
 
-function Update () {
+function CalibrateDifficulty() : float {
+	var damageTaken = dataCollector.damage_taken - damageTakenSoFar;
+	damageTakenSoFar = dataCollector.damage_taken;
+	
+	var playerPerformance = (damageTaken / estimatedDamageTaken[director.currentSceneIdx]) - 1;
+	//Debug.Log(playerPerformance);
+	var newModifier = Mathf.Exp(playerPerformance) * dampenerConstant;
+	currentDifficultyLevel /= newModifier;
+	return currentDifficultyLevel;
+}
 
+function GetCurrentDifficultyLevel() {
+	return currentDifficultyLevel;
 }
