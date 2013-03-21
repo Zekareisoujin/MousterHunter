@@ -21,7 +21,10 @@ var currentSceneInfo;
 
 var enemyList	: Array;
 
+@System.NonSerialized
 var dataCollector 	: DataCollector;
+@System.NonSerialized
+var difficultyDirector : DifficultyDirector;
 
 // Global resources
 @System.NonSerialized
@@ -37,6 +40,7 @@ function Awake() {
 	rm.SetCurrentActiveStageDirector(gameObject);
 	dataCollector = GetComponent(DataCollector);
 	rm.SetCurrentActiveDataCollector(dataCollector);
+	difficultyDirector = GetComponent(DifficultyDirector);
 }
 
 function Start () {
@@ -77,6 +81,7 @@ function SpawnPlayerCharacter() {
 
 function StartGame() {
 	dataCollector.StageStart();
+	difficultyDirector.Initialize();
 	currentSceneIdx = 0;
 	InitializeCurrentScene();
 }

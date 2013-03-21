@@ -15,6 +15,7 @@ class ResourceManager {
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
 	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
+	private var difficultyRatings = [1.00, 1.00, 1.00, 2.00, 3.00, 5.00];
 	
 	// Some constants
 	public static final var UNIT_TYPE_WARRIOR 	= 0;
@@ -28,7 +29,6 @@ class ResourceManager {
 	public static final var TEAM_ID_AI_ENEMY	= 1;
 	
 	function ResourceManager() {
-		//erm = EffectResourceManager().GetEffectResourceManager();
 		InitializeUnitTypeTable();
 		InitializeActionList();
 		InitializeActionGraph();
@@ -336,5 +336,9 @@ class ResourceManager {
 	
 	function GetCurrentActiveDataCollector() {
 		return activeDataCollector;
+	}
+	
+	function GetDifficultyRatings() {
+		return difficultyRatings;
 	}
 }
