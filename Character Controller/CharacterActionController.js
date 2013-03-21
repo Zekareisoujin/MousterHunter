@@ -31,6 +31,8 @@ protected var actionEffect;
 protected var hitLocation = "root/hit";
 protected var hitEffectDuration = 0.3;
 
+var movementLane = 0.0; // position in the z-direction, default is 0.0. Might randomize in a small range for enemies characters
+
 // Container class that contains various character states
 class CharacterStates {
 	// Check whether the character is controllable
@@ -476,7 +478,7 @@ function Update () {
 	var displacement = Vector3.zero;
 	displacement += Vector3(groundMovement.walkSpeed, 0, 0) * Time.deltaTime;
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;
-	displacement += Vector3(0, 0, -transform.position.z);
+	displacement += Vector3(0, 0, -(transform.position.z - movementLane));
 	
 	// Forgot what this variable is used for...
 	currentState.isGrounded = controller.isGrounded;

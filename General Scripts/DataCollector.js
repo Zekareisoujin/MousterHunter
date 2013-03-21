@@ -30,13 +30,17 @@ class DataCollector extends MonoBehaviour{
 	/*
 	 * Methods
 	 */
-	function Start() {
+	function Awake() {
 		rm = ResourceManager.GetResourceManager();
+		attack_id_hit = new Hashtable();
+	}
+	
+	function Start() {
+		
 	}
 	 
 	function Initialize() {
-		attack_id_hit = new Hashtable();
-		
+		attack_id_hit.Clear();
 		attack_made = 0;
 		attack_made_successful = 0;
 		attack_id_current = 0;
@@ -50,6 +54,7 @@ class DataCollector extends MonoBehaviour{
 	
 	function StageStart() {
 		time_start = Time.time;
+		Initialize();
 	}
 	
 	function StageEnd() {
