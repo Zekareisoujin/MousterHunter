@@ -26,7 +26,7 @@ class ProjectileScript extends GeneralEffectScript {
 		var defenderStats = other.GetComponent(CharacterStatus);
 		var defenderController = other.GetComponent(CharacterActionController);
 		
-		if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other)){
+		if (defenderController != null && !defenderController.currentState.invulnerable && !Contains(oldTarget, other) && !defenderController.currentState.isDead && defenderStats.GetTeamID() != ownerTeamID){
 			// Calculation:
 			var dmg = calc.CalculateDamage(attack, defenderStats.GetDefensePower());
 			var flinch = calc.CalculateFlinchDuration(impact, defenderStats.GetResilience());

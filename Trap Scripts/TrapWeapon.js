@@ -32,6 +32,7 @@ function CheckHit(other : Collider) {
 			//Debug.Log(dmg);
 			//Debug.Log(flinchDuration);
 			
+			Debug.Log(gameObject);
 			other.GetComponent(CharacterActionController).ApplyKnockback(direction, Vector3(1,1,0));
 			other.GetComponent(CharacterActionController).ApplyFlinch(flinchDuration);
 	

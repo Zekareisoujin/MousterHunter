@@ -4,7 +4,7 @@ class ExplodingProjectileScript extends ProjectileScript {
 
 	override function OnTriggerStay(other : Collider) {
 		CheckHit(other);
-		if (other.GetComponent(Terrain) != null) {
+		if (other.tag == "Ground") {
 			SpawnExplosion();
 			Destroy(gameObject);
 		}
@@ -14,6 +14,7 @@ class ExplodingProjectileScript extends ProjectileScript {
 		var effect = Instantiate(Resources.Load(explosionPath), transform.position, Quaternion.identity);
 		var effectScript = effect.GetComponent(GeneralEffectScript);
 		effectScript.SetParent(parent);
-		effectScript.SetEffectArm(attack, impact, knockback);
+		effectScript.SetEffectArm(attack, impact, knockback, ownerTeamID);
+		effectScript.SetRecordID(recordID);
 	}
 }

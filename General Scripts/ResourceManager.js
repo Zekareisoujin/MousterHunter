@@ -11,10 +11,21 @@ class ResourceManager {
 	private static var selectedStage : String;
 	private static var selectedCharacter : String;
 	private static var activeStageDirector : GameObject;
+	private static var activeDataCollector : DataCollector;
 	
 	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
 	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
 	
+	// Some constants
+	public static final var UNIT_TYPE_WARRIOR 	= 0;
+	public static final var UNIT_TYPE_WIZARD 	= 1;
+	public static final var UNIT_TYPE_ROGUE		= 2;
+	public static final var UNIT_TYPE_SOLDIER	= 3;
+	public static final var UNIT_TYPE_ARCHER	= 4;
+	public static final var UNIT_TYPE_BRUTE		= 5;
+	
+	public static final var TEAM_ID_PLAYER		= 0;
+	public static final var TEAM_ID_AI_ENEMY	= 1;
 	
 	function ResourceManager() {
 		//erm = EffectResourceManager().GetEffectResourceManager();
@@ -53,7 +64,7 @@ class ResourceManager {
 		weapon12.Add(1);
 		
 		// General melee skills that everyone has
-		var actionAttack 	= new CharacterAction("Attack", 1.0, 1.0, 1, "attack", "attackRecover", weapon1, 0.05, "idle", 0.0);
+		var actionAttack 	= new CharacterAction("Attack", 1.0, 1.0, 1, "attack", "attackRecover", weapon1, 0.12, "idle", 0.0);
 		var actionAttack2 	= new CharacterAction("Attack 2", 1.1, 1.1, 1, "attack2", "attack2Recover", weapon1, 0.05, "idle", 0.0);
 		actionAttack.knockback  = Vector3(1.0, 1.0, 0);
 		actionAttack2.movement 	= Vector3(5.0, 0, 0);
@@ -62,16 +73,17 @@ class ResourceManager {
 		// Warrior-specific skills
 		var smash 	= new CharacterAction("Trinity Smash", 1.2, 1.5, 2, "smash", "smashRecover", weapon1, 0.07, "idle", 0.0);
 		var spin 	= new CharacterAction("Whirlwind", 1.1, 0.9, 2, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
-		var thrust 	= new CharacterAction("Gale Maw", 0.9, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.02, "idle", 0.4);
+		var thrust 	= new CharacterAction("Tempest Strike", 1.2, 1.2, 2, "thrust", "thrustRecover", weapon1, 0.0, "idle", 0.0);
 		var wwind	= new CharacterAction("Whirlwind", 0.75, 1.5, 1, "spin", "spinRecover", weapon1, 0.02, "idle", 0.0);
 		smash.movement 	= Vector3(2.0, 10.0, 0);
 		smash.knockback = Vector3(3.0, 3.0, 0);
-		smash.AddActionEffect("Elements/FlameAxe", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip");
-		smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
+		smash.AddActionEffect("Elements/TrinityBomb", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip");
+		//smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
 		spin.knockback 	= Vector3(1.0, 0, 0);
-		thrust.movement = Vector3(10.0, 0, 0);
+		spin.movement 	= Vector3(10.0, 2.0, 0);
+		thrust.movement = Vector3(8.0, 12.0, 0);
 		thrust.knockback = Vector3(2.0, 0, 0);
-		thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
+		//thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
 		wwind.movement = Vector3(5.0, 0, 0);
 		wwind.knockback = Vector3(2.0, 0, 0);
 		wwind.keepMomentum = true;
@@ -80,8 +92,8 @@ class ResourceManager {
 		warriorActionList.Add(actionAttack);
 		warriorActionList.Add(actionAttack2);
 		warriorActionList.Add(smash);
-		warriorActionList.Add(spin);
 		warriorActionList.Add(thrust);
+		warriorActionList.Add(spin);
 		warriorActionList.Add(wwind);
 		
 		// Wizard-specific skills
@@ -216,13 +228,13 @@ class ResourceManager {
 		var standardStage = new Array();
 		
 		stdsc1 = new SceneInfo(0, 1);
-		stdsc1.AddEnemy(3, 3);
+		stdsc1.AddEnemy(UNIT_TYPE_SOLDIER, 3);
 		standardStage.Add(stdsc1);
 		
 		stdsc2 = new SceneInfo(1, 2);
-		stdsc2.AddEnemy(3, 4);
-		stdsc2.AddEnemy(4, 2);
-		stdsc2.AddEnemy(5, 1);
+		stdsc2.AddEnemy(UNIT_TYPE_SOLDIER, 4);
+		stdsc2.AddEnemy(UNIT_TYPE_ARCHER, 2);
+		stdsc2.AddEnemy(UNIT_TYPE_BRUTE, 1);
 		standardStage.Add(stdsc2);
 		
 		StageDirectory.Add("Standard Stage", standardStage);
@@ -275,5 +287,13 @@ class ResourceManager {
 	
 	function GetCurrentActiveStageDirector() {
 		return activeStageDirector;
+	}
+	
+	function SetCurrentActiveDataCollector(dataCollector) {
+		activeDataCollector = dataCollector;
+	}
+	
+	function GetCurrentActiveDataCollector() {
+		return activeDataCollector;
 	}
 }

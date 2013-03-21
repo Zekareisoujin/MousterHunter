@@ -31,14 +31,14 @@ class ArrowRain extends ProjectileSpawnerScript {
 		//Debug.Log(effAttack + " " + effImpact);
 		var effect = Instantiate(Resources.Load(effectPath), effectSpawnPoint, Quaternion.identity);
 		var effectScript = effect.GetComponent(Arrow);
-		effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
+		effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
 		effectScript.velocity = velocity;
 	}
 	
 	override function SpawnEffect(effAttack, effImpact, effKnockback) {
 		var effect = Instantiate(Resources.Load(effectPath), effectSpawnPoint, Quaternion.identity);
 		var effectScript = effect.GetComponent(Arrow);
-		effectScript.SetEffectArm(effAttack, effImpact, effKnockback);
+		effectScript.SetEffectArm(effAttack, effImpact, effKnockback, ownerTeamID);
 	}
 	
 }
