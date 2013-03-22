@@ -78,7 +78,7 @@ function SpawnPlayerCharacter() {
 	mainCamScript.target = playerCharacter;
 	
 	var guiLife = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
-	playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
+	//playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
 	guiLife.GetComponent(GUIBar).playerCharacter = playerCharacter;
 }
 

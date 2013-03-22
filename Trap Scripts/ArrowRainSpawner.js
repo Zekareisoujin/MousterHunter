@@ -50,6 +50,11 @@ function Start () {
 }
 
 function Update () {
+	if(enemy == null)
+	{
+		cam = GameObject.Find("Main Camera").GetComponent(CameraFocus);
+		enemy = cam.target; 
+	}
 	if(shoot)
 	{
 		if(Time.time > reshoot+lastShot)

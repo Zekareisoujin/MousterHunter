@@ -38,6 +38,7 @@ function SetRecordID(id) {
 }
 
 function CheckHit(other : Collider) {
+	
 	var defenderStats = other.GetComponent(CharacterStatus);
 	var defenderController = other.GetComponent(CharacterActionController);
 	
