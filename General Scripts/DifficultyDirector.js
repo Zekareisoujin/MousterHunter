@@ -62,5 +62,7 @@ function CalibrateDifficulty() : float {
 }
 
 function GetCurrentDifficultyLevel() {
-	return currentDifficultyLevel;
+	if (isEnabled)
+		return currentDifficultyLevel;
+	else return 1.0;
 }
