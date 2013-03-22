@@ -65,7 +65,10 @@ function Start () {
 }
 
 function Update () {
-	
+	if (lifeBarObject != null) {
+		lifeBarScript.currentHp = currentLife;
+		lifeBarScript.maxHp = maxLife;
+	}
 }
 
 function GetAttackPower() {

@@ -476,6 +476,8 @@ function Update () {
 	// Activate jumping, update vertical speed according to gravity
 	UpdateAirMovement();
 	
+	
+	
 	var displacement = Vector3.zero;
 	displacement += Vector3(groundMovement.walkSpeed, 0, 0) * Time.deltaTime;
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;

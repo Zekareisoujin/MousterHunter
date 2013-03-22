@@ -73,6 +73,7 @@ function SpawnPlayerCharacter() {
 	
 	var guiLife = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
 	playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
+	guiLife.GetComponent(GUIBar).playerCharacter = playerCharacter;
 }
 
 function StartGame() {
