@@ -21,7 +21,12 @@ var currentSceneInfo;
 
 var enemyList	: Array;
 
+var currentDifficultyLevel : float;
+
+@System.NonSerialized
 var dataCollector 	: DataCollector;
+@System.NonSerialized
+var difficultyDirector : DifficultyDirector;
 
 // Global resources
 @System.NonSerialized
@@ -37,6 +42,7 @@ function Awake() {
 	rm.SetCurrentActiveStageDirector(gameObject);
 	dataCollector = GetComponent(DataCollector);
 	rm.SetCurrentActiveDataCollector(dataCollector);
+	difficultyDirector = GetComponent(DifficultyDirector);
 }
 
 function Start () {
@@ -79,6 +85,8 @@ function SpawnPlayerCharacter() {
 function StartGame() {
 	dataCollector.StageStart();
 	currentSceneIdx = 0;
+	difficultyDirector.Initialize();
+	currentDifficultyLevel = difficultyDirector.GetCurrentDifficultyLevel();
 	InitializeCurrentScene();
 }
 
@@ -88,6 +96,8 @@ function ForwardScene() {
 		GameOver();
 	}
 	
+	//Call this here:
+	currentDifficultyLevel = difficultyDirector.CalibrateDifficulty();
 	InitializeCurrentScene();
 }
 
@@ -101,7 +111,7 @@ function InitializeCurrentScene() {
 	// Right now let's just spawn things right at the boundary
 	spawnPointLeft = boundLeft;
 	spawnPointRight = boundRight;
-	sceneTrigger.transform.position = boundLeft + (boundRight - boundLeft) / 3;
+	sceneTrigger.transform.position = boundLeft + (boundRight - boundLeft) / 4;
 	sceneTrigger.GetComponent(SceneTrigger).running = true;
 }
 
@@ -119,9 +129,11 @@ function SpawnEnemiesForCurrentScene() {
 			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
 			unit.GetComponent(CharacterActionController).movementLane = (Random.value - 0.5) / 2;
 			unit.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_AI_ENEMY);
+			unit.GetComponent(CharacterStatus).difficultyModifier = currentDifficultyLevel;
 			
 			var unitAI = unit.GetComponent(StandardAIController);
 			unitAI.SetTarget(playerCharacter.gameObject);
+			unitAI.difficultyModifier = currentDifficultyLevel;
 			enemyList.Add(unit);
 			//unit.GetComponent(SampleAIController).patrol = false; // temporary			
 		}

@@ -1,7 +1,8 @@
 class ResourceManager {
-	static var rm: ResourceManager;
+	public static var instance : ResourceManager;
+	//public static var called = 0;	// Used for testing. Result is that singleton doesn't work
 	
-	private static var erm : EffectResourceManager;
+	//private static var erm : EffectResourceManager;
 	private static var ActionList : Hashtable;
 	private static var ActionGraph : Hashtable;
 	private static var UnitType	: Hashtable;
@@ -13,8 +14,9 @@ class ResourceManager {
 	private static var activeStageDirector : GameObject;
 	private static var activeDataCollector : DataCollector;
 	
-	private var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
-	private var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
+	private static var chainMultiplier = [1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.50, 1.55, 1.55, 1.60, 1.60, 1.65, 1.65];
+	private static var chainCastReduction = [1.00, 0.80, 0.60, 0.50, 0.40, 0.40, 0.40, 0.35, 0.35, 0.35, 0.30, 0.30, 0.30];
+	private static var difficultyRatings = [1.00, 1.00, 1.00, 2.00, 3.00, 5.00];
 	
 	// Some constants
 	public static final var UNIT_TYPE_WARRIOR 	= 0;
@@ -28,7 +30,8 @@ class ResourceManager {
 	public static final var TEAM_ID_AI_ENEMY	= 1;
 	
 	function ResourceManager() {
-		//erm = EffectResourceManager().GetEffectResourceManager();
+		//The line below get called multiple time. Fuck unity.
+		//Debug.Log("called: " + called++);
 		InitializeUnitTypeTable();
 		InitializeActionList();
 		InitializeActionGraph();
@@ -36,9 +39,9 @@ class ResourceManager {
 	}
 	
 	static function GetResourceManager() : ResourceManager {
-		if (rm == null)
-			rm = new ResourceManager();
-		return rm;
+		if (ResourceManager.instance == null)
+			ResourceManager.instance = new ResourceManager();
+		return ResourceManager.instance;
 	}
 	
 	function InitializeUnitTypeTable(){
@@ -282,59 +285,67 @@ class ResourceManager {
 		
 	}
 	
-	function GetActionList(){
+	/*
+	 * Singleton pattern doesn't fucking work in unity. Therefore declaring everything static
+	 */
+	
+	static function GetActionList(){
 		return ActionList;
 	}
 	
-	function GetActionGraph(){
+	static function GetActionGraph(){
 		return ActionGraph;
 	}
 	
-	function GetChainMultiplier(){
+	static function GetChainMultiplier(){
 		return chainMultiplier;
 	}
 	
-	function GetChainCastReduction(){
+	static function GetChainCastReduction(){
 		return chainCastReduction;
 	}
 	
-	function SetSelectedStage(stage){
+	static function SetSelectedStage(stage){
 		selectedStage = stage;
 	}
 	
-	function GetSelectedStage(){
+	static function GetSelectedStage(){
 		return selectedStage;
 	}
 	
-	function GetSceneInfo(stage){
+	static function GetSceneInfo(stage){
 		return StageDirectory[stage];
 	}
 	
-	function SetSelectedCharacter(character : int){
+	static function SetSelectedCharacter(character : int){
 		selectedCharacter = character;
 	}
 	
-	function GetSelectedCharacter(){
+	static function GetSelectedCharacter(){
 		return selectedCharacter;
 	}
 	
-	function GetUnitTypeFromString(str : String){
+	static function GetUnitTypeFromString(str : String){
 		return UnitType[str];
 	}
 	
-	function SetCurrentActiveStageDirector(director) {
+	static function SetCurrentActiveStageDirector(director) {
 		activeStageDirector = director;
 	}
 	
-	function GetCurrentActiveStageDirector() {
+	static function GetCurrentActiveStageDirector() {
 		return activeStageDirector;
 	}
 	
-	function SetCurrentActiveDataCollector(dataCollector) {
+	static function SetCurrentActiveDataCollector(dataCollector) {
 		activeDataCollector = dataCollector;
 	}
 	
-	function GetCurrentActiveDataCollector() {
+	static function GetCurrentActiveDataCollector() {
 		return activeDataCollector;
+	}
+	
+	static function GetDifficultyRatings() {
+		return difficultyRatings;
 	}
 }
