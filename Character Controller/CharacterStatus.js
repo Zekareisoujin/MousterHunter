@@ -51,15 +51,18 @@ protected var director 	: StageDirector;
 @System.NonSerialized
 protected var dataCollector : DataCollector;
 
+function Awake() {
+	maxLife = GetMaxLife();
+	currentLife = maxLife;
+	isAlive = true;
+}
+
 function Start () {
 	rm = ResourceManager.GetResourceManager();
 	if (rm.GetCurrentActiveStageDirector() != null)
 		director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	dataCollector = rm.GetCurrentActiveDataCollector();
 	
-	maxLife = GetMaxLife();
-	currentLife = maxLife;
-	isAlive = true;
 	/*if (lifeBarObject != null) {
 		lifeBarScript = lifeBarObject.GetComponent(GUIBar);
 		lifeBarScript.SetDisplayValue(1.0);
