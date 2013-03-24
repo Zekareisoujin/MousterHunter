@@ -212,7 +212,7 @@ class ResourceManager {
 							[-1,-1, 2, 3, 4],
 							[ 1,-1,-1, 3, 4],
 							[ 1,-1, 2,-1, 4],
-							[ 1,-1, 2, 3, 4] ];
+							[ 1,-1, 2, 3,-1] ];
 							
 		ActionGraph.Add("Rogue", rogueGraph);
 		

@@ -39,8 +39,11 @@ class CharacterStates {
 	// Check whether the character is controllable
 	var isControllable =  true;
 
-	// Show if the character is grounded, according to collider. Forgot what this is used for
+	// Show if the character is grounded, according to collider. To help with animation, character does not start falling animation the moment they are not grounded
 	var isGrounded = false;
+	var groundDurationEnd = 0.0;
+	var groundDurationPeriod = 0.5;
+	var justGrounded = true; // helper function
 	
 	// Show if character is in the motion of attacking. In this case, movement inputs are disabled
 	var isActing = false;
@@ -163,8 +166,28 @@ class ActionConfiguration {
 	var chainCapacityCurrent = 0;
 	var chainCapacityMax = 6;
 	var chainLength = 0;
+	var chainRegen = true;
+	var chainRegenRate = 0.15;
+	var chainRegenNext;
 	var chainMultiplier;
 	var chainCastReduction;
+	
+	
+	function EnableChainRegen() {
+		chainRegen = true;
+		chainRegenNext = Time.time + chainRegenRate;
+	}
+	
+	function DisableChainRegen() {
+		chainRegen = false;
+	}
+	
+	function UpdateChainCapacityRegen() {
+		if (chainRegen && Time.time > chainRegenNext && chainCapacityCurrent < chainCapacityMax){
+			chainCapacityCurrent++;
+			chainRegenNext = Time.time + chainRegenRate;
+		}
+	}
 }
 
 var actionCfg : ActionConfiguration;
@@ -188,6 +211,7 @@ function Start() {
 	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
 	actionCfg.chainMultiplier = rm.GetChainMultiplier();
 	actionCfg.chainCastReduction = rm.GetChainCastReduction();
+	actionCfg.EnableChainRegen();
 	
 	ownerTeamID = stats.GetTeamID();
 	animationSpeed = stats.GetSpeed();
@@ -224,10 +248,11 @@ function UpdateAttack() {
 				else
 					actionCfg.currentAction = actionGraph[actionCfg.currentAction][actionCfg.orderedAction];
 				nextAction = actionList[actionCfg.currentAction];
-					
+				
 				if (nextAction.chainCost <= actionCfg.chainCapacityCurrent) {
+					actionCfg.DisableChainRegen();
+					//Debug.Log(nextAction.name + " " + actionCfg.chainCapacityCurrent);
 					actionCfg.chainCapacityCurrent -= nextAction.chainCost;
-					//Debug.Log(nextAction.name);
 					actionCfg.isPerformingAction = true;
 					
 					if (nextAction.prepareEffect){
@@ -245,7 +270,8 @@ function UpdateAttack() {
 					
 					var castDelay = nextAction.prepareDuration * actionCfg.chainCastReduction[actionCfg.chainLength];
 					StartCoroutine(WaitForActionPreparationEnd(nextAction, castDelay, recordID));
-				}
+				} else
+					ResetAction(); // temporary fix, havent figured out the correct flow yet
 			}
 		}
 	}
@@ -345,7 +371,7 @@ function ResetAction() {
 	currentState.isActing = false;
 	actionCfg.isArmed = false;
 	actionCfg.isPerformingAction = false;
-	actionCfg.chainCapacityCurrent = actionCfg.chainCapacityMax;
+	actionCfg.EnableChainRegen();
 	actionCfg.currentAction = -1;
 	actionCfg.chainLength = 0;
 }
@@ -447,7 +473,7 @@ function UpdateAnimation() {
 			if (!controller.isGrounded){
 				if (airMovement.airSpeed >= 0)
 					animation.CrossFade("jump");
-				else
+				else if (!currentState.isGrounded)
 					animation.CrossFade("jumpFall");
 				
 			} else {
@@ -459,6 +485,7 @@ function UpdateAnimation() {
 		}
 	}
 }
+
 
 function Update () {
 	// Check status first
@@ -476,6 +503,9 @@ function Update () {
 	// Activate jumping, update vertical speed according to gravity
 	UpdateAirMovement();
 	
+	// Regenerate chain capacity
+	actionCfg.UpdateChainCapacityRegen();
+	
 	
 	
 	var displacement = Vector3.zero;
@@ -483,8 +513,14 @@ function Update () {
 	displacement += Vector3(0, airMovement.airSpeed, 0) * Time.deltaTime;
 	displacement += Vector3(0, 0, -(transform.position.z - movementLane));
 	
-	// Forgot what this variable is used for...
-	currentState.isGrounded = controller.isGrounded;
+	if (controller.isGrounded) 
+		currentState.isGrounded = controller.isGrounded;
+	else {
+		if (currentState.justGrounded)
+			currentState.groundDurationEnd = Time.time + currentState.groundDurationPeriod;
+		currentState.isGrounded = (Time.time < currentState.groundDurationEnd);
+	}
+	currentState.justGrounded = controller.isGrounded;
 	
 	// Apply movement if there is one
 	controller.Move(displacement);

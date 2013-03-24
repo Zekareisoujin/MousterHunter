@@ -98,6 +98,7 @@ function ForwardScene() {
 	
 	//Call this here:
 	currentDifficultyLevel = difficultyDirector.CalibrateDifficulty();
+	difficultyDirector.EstimateDamageTaken();
 	InitializeCurrentScene();
 }
 
