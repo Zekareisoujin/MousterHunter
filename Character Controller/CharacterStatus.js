@@ -30,10 +30,12 @@ var difficultyModifier	: float = 1.0;
 // It means that attack only hit every period indicated here
 var attackFrequency : float = 0.1;
 
+/*
 // GUI component
 var lifeBarObject : GameObject;
 @System.NonSerialized
 var lifeBarScript : GUIBar;
+*/
 
 // Status
 var isAlive : boolean; //fk this shit
@@ -58,17 +60,17 @@ function Start () {
 	maxLife = GetMaxLife();
 	currentLife = maxLife;
 	isAlive = true;
-	if (lifeBarObject != null) {
+	/*if (lifeBarObject != null) {
 		lifeBarScript = lifeBarObject.GetComponent(GUIBar);
 		lifeBarScript.SetDisplayValue(1.0);
-	}
+	}*/
 }
 
 function Update () {
-	if (lifeBarObject != null) {
+	/*if (lifeBarObject != null) {
 		lifeBarScript.currentHp = currentLife;
 		lifeBarScript.maxHp = maxLife;
-	}
+	}*/
 }
 
 function GetMaxLife() {
@@ -122,10 +124,10 @@ function ApplyDamage(dmg) {
 			director.ReportDeath(gameObject);
 		}
 		
-		if (lifeBarScript != null){
+		/*if (lifeBarScript != null){
 			var displayVal = currentLife / maxLife;	
 			lifeBarScript.SetDisplayValue(displayVal);
-		}
+		}*/
 		
 		// Record the damage
 		dataCollector.RegisterDamage(dmg, teamID);
@@ -148,9 +150,9 @@ function RecoverHealth(health) {
 		gainedHp = Mathf.Round(gainedHp);
 		SendMessage("ShowFloatingText", "+"+gainedHp.ToString(), SendMessageOptions.DontRequireReceiver);
 		
-		if (lifeBarScript != null){
+		/*if (lifeBarScript != null){
 			var displayVal = currentLife / maxLife;	
 			lifeBarScript.SetDisplayValue(displayVal);
-		}
+		}*/
 	}
 }

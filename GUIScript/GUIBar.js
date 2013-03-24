@@ -26,7 +26,6 @@ var playerCharacterController;
 function Start() {
 	playerCharacterStat = playerCharacter.GetComponent(CharacterStatus);
 	playerCharacterController = playerCharacter.GetComponent(CharacterActionController);
-	//Debug.Log(playerCharacter.GetComponent(CharacterActionController));
 }
 
 function OnGUI () {
@@ -64,7 +63,7 @@ function OnGUI () {
 
 function Update() {
 	if (playerCharacter != null) {
-		//UpdateLifeDisplay();
+		UpdateLifeDisplay();
 		UpdateChainDisplay();
 	}
 	
@@ -72,7 +71,12 @@ function Update() {
 }
 
 function UpdateLifeDisplay(){
-	actualValue = playerCharacterStat.currentLife;
+	currentHp = playerCharacterStat.currentLife;
+	maxHp = playerCharacterStat.maxLife;
+	//actualValue = currentHp;
+	//to typecast int to float
+	//displayValue = 1.0 * currentHp / maxHp ;
+	actualValue = 1.0 * currentHp/maxHp;
 }
 
 function UpdateChainDisplay() {
