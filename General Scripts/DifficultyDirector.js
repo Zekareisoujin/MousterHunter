@@ -35,7 +35,7 @@ function Start () {
 function Initialize() {
 	sceneList = director.sceneList;
 	mainCharacter = director.playerCharacter.GetComponent(CharacterStatus);
-	var maxLife = mainCharacter.maxLife;
+	var maxLife = mainCharacter.GetMaxLife();
 	
 	totalDifficultyRating = 0;
 	for (scene in sceneList) 
@@ -53,6 +53,7 @@ function Initialize() {
 function CalibrateDifficulty() : float {
 	var damageTaken = dataCollector.damage_taken - damageTakenSoFar;
 	damageTakenSoFar = dataCollector.damage_taken;
+	Debug.Log(damageTaken);
 	
 	var playerPerformance = (damageTaken / estimatedDamageTaken[director.currentSceneIdx]) - 1;
 	//Debug.Log(playerPerformance);

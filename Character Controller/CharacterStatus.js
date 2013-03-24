@@ -55,7 +55,7 @@ function Start () {
 		director = rm.GetCurrentActiveStageDirector().GetComponent(StageDirector);
 	dataCollector = rm.GetCurrentActiveDataCollector();
 	
-	maxLife = maxLifeBase + maxLifeVar * difficultyModifier;
+	maxLife = GetMaxLife();
 	currentLife = maxLife;
 	isAlive = true;
 	if (lifeBarObject != null) {
@@ -69,6 +69,10 @@ function Update () {
 		lifeBarScript.currentHp = currentLife;
 		lifeBarScript.maxHp = maxLife;
 	}
+}
+
+function GetMaxLife() {
+	return maxLifeBase + maxLifeVar * difficultyModifier;
 }
 
 function GetAttackPower() {

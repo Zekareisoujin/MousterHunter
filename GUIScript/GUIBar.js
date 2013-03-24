@@ -26,7 +26,7 @@ var playerCharacterController;
 function Start() {
 	playerCharacterStat = playerCharacter.GetComponent(CharacterStatus);
 	playerCharacterController = playerCharacter.GetComponent(CharacterActionController);
-	Debug.Log(playerCharacter.GetComponent(CharacterActionController));
+	//Debug.Log(playerCharacter.GetComponent(CharacterActionController));
 }
 
 function OnGUI () {
