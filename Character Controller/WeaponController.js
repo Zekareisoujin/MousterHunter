@@ -18,6 +18,8 @@ var oldTarget : Array = new Array();
 var trailEmitterBase : GameObject;
 var trailEmitter;
 
+var audioClip : AudioClip[];
+
 function Start () {
 	calc = Calculator.GetCalculator();
 	recordID = -1;
@@ -69,6 +71,13 @@ function CheckHit(other : Collider) {
 			
 			// Record the hit:
 			ResourceManager.GetResourceManager().GetCurrentActiveDataCollector().RegisterSuccessfulAttack(recordID);
+			
+			// Sound effect
+			if (audio != null) {
+				if (audioClip.length != 0)
+					audio.clip = audioClip[Random.Range(0, audioClip.length)];
+				audio.Play();
+			}
 		}
 	}
 	
@@ -96,3 +105,5 @@ function Update() {
 	if (trailEmitter != null)
 	trailEmitter.Emit = (Time.time < armEnd && Time.time > armStart);
 }
+
+@script RequireComponent(AudioSource);
