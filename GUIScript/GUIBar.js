@@ -4,8 +4,11 @@ var dim = Vector2(256, 32);
 var HpDisplayPos = Vector2(110, 10);
 var ChainDisplayPos = Vector2(10, 10);
 
+var ArrowDim = Vector2(128, 128);
+
 var bgImage : Texture2D; // background image that is 256 x 32
 var fgImage : Texture2D; // foreground image that is 256 x 32
+var arrowImage : Texture2D;
 var displayValue = 0.0; // a float between 0.0 and 1.0, one that is being displayed
 var actualValue = 0.0; // similar to displayValue, but in the future displayValue will be used for animation instead
 var lerpPeriod = 0.2;
@@ -22,6 +25,9 @@ var chainStyle : GUIStyle;
 var playerCharacter	: GameObject;
 var playerCharacterStat;
 var playerCharacterController;
+
+//set this to true to show blinking arrow
+var showArrow = false;
 
 function Start() {
 	playerCharacterStat = playerCharacter.GetComponent(CharacterStatus);
@@ -59,6 +65,19 @@ function OnGUI () {
 		GUI.Label (Rect (0, 32, 200, dim.y), chainComboDisplay , chainStyle);
 	
 	GUI.EndGroup();
+	
+	
+	GUI.BeginGroup(Rect (Screen.width - ArrowDim.x - 30, Screen.height / 2 - ArrowDim.y / 2, ArrowDim.x, ArrowDim.y));
+		
+	if(showArrow)
+	{
+		if(Time.time % 1.5 < 1)
+		{		
+			GUI.Label (Rect (0, 0, ArrowDim.x, ArrowDim.y), arrowImage);
+		}
+	}
+	
+	GUI.EndGroup();		
 }
 
 function Update() {
