@@ -1,3 +1,5 @@
+import System.IO;
+
 class DataCollector extends MonoBehaviour{
 	
 	/*
@@ -36,7 +38,6 @@ class DataCollector extends MonoBehaviour{
 	}
 	
 	function Start() {
-		
 	}
 	 
 	function Initialize() {
@@ -93,5 +94,18 @@ class DataCollector extends MonoBehaviour{
 	
 	function RegisterKeyStrokeMade() {
 		keystroke_made++;
+	}
+	
+	function WriteLogToFile() {
+		var filePath = Application.dataPath;
+		//Generate the filename here
+		//filePath += "/test.txt";
+		
+		var fs = File.CreateText(filePath);
+		
+		//Write the content here
+		//fs.WriteLine("I hope this work");
+		
+		fs.Close();	
 	}
 }
