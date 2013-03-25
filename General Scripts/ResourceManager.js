@@ -8,8 +8,10 @@ class ResourceManager {
 	private static var UnitType	: Hashtable;
 	
 	// Stage related variable
-	private static var StageDirectory : Hashtable;
-	private static var selectedStage : String;
+	private static var StageDirectory 	: Hashtable;
+	private static var playerName		: String;
+	private static var difficultyTuning : boolean;
+	private static var selectedStage 	: String;
 	private static var selectedCharacter : int; // unitTypeID
 	private static var activeStageDirector : GameObject;
 	private static var activeDataCollector : DataCollector;
@@ -309,6 +311,22 @@ class ResourceManager {
 	
 	static function GetChainCastReduction(){
 		return chainCastReduction;
+	}
+	
+	static function SetPlayerName(name) {
+		playerName = name;
+	}
+	
+	static function GetPlayerName() {
+		return playerName;
+	}
+	
+	static function SetDifficultyTuning(val) {
+		difficultyTuning = val;
+	}
+	
+	static function GetDifficultyTuning() {
+		return difficultyTuning;
 	}
 	
 	static function SetSelectedStage(stage){

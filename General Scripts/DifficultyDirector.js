@@ -22,6 +22,10 @@ var currentDifficultyLevel : float;
 var damageTakenSoFar;
 var dampenerConstant;
 
+// For calibration purpose
+var difficultyLog  : Array;
+var performanceLog : Array;
+
 function Awake() {
 	rm = ResourceManager.GetResourceManager();
 	director = GetComponent(StageDirector);
@@ -47,6 +51,9 @@ function Initialize() {
 	currentDifficultyLevel = 1.00;
 	damageTakenSoFar = 0.0;
 	dampenerConstant = 0.5; //To be found out using experiment
+	
+	difficultyLog = new Array();
+	performanceLog = new Array();
 }
 
 function EstimateDamageTaken() {
@@ -71,7 +78,11 @@ function CalibrateDifficulty() : float {
 		playerPerformance = (damageTaken / estimatedDamageTaken[director.currentSceneIdx]) - 1;
 	else
 		playerPerformance = (damageTaken / (mainCharacter.currentLife + damageTaken));
-	Debug.Log(playerPerformance);
+	//Debug.Log(playerPerformance);
+	
+	difficultyLog.Add(currentDifficultyLevel);
+	performanceLog.Add(playerPerformance);
+	
 	var newModifier = Mathf.Exp(playerPerformance * dampenerConstant);
 	currentDifficultyLevel /= newModifier;
 	return currentDifficultyLevel;

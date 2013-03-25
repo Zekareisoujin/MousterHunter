@@ -11,7 +11,7 @@ var characterType : String;
 var deathEffect 	: GameObject;
 var floatingText 	: GameObject;
 
-//@System.NonSerialized
+@System.NonSerialized
 var floatingTextColor : Color;
 
 var permanentWeapon	: GameObject[];
@@ -56,11 +56,25 @@ class CharacterStates {
 	var isFlinching = false;
 	var flinchDurationEnd = 0.0;
 	
+	// Diminishing return mechanics, every stack of flinch will reduce flinch time by a set %. Stacks are cleared periodically. Cap at 100% reduction
+	var flinchStack = 0;
+	var flinchStackReduction = 0.15;
+	var flinchStackDegenEnd = 0.0;
+	var flinchStackDegenPeriod = 1.0;
+	
 	// When life drop below 0
 	var isDead = false;
 	
 	// Determines if character takes damage from attack at all
 	var invulnerable = false;
+	
+	function UpdateFlinchStackDegen() {
+		if (Time.time > flinchStackDegenEnd) {
+			flinchStackDegenEnd += flinchStackDegenPeriod;
+			if (flinchStack > 0)
+				flinchStack--;
+		}
+	}
 }
 
 var currentState : CharacterStates;
@@ -187,9 +201,10 @@ class ActionConfiguration {
 	}
 	
 	function UpdateChainCapacityRegen() {
-		if (chainRegen && Time.time > chainRegenNext && chainCapacityCurrent < chainCapacityMax){
-			chainCapacityCurrent++;
-			chainRegenNext = Time.time + chainRegenRate;
+		if (chainRegen && Time.time > chainRegenNext){
+			chainRegenNext += chainRegenRate;
+			if (chainCapacityCurrent < chainCapacityMax)
+				chainCapacityCurrent++;
 		}
 	}
 }
@@ -510,7 +525,8 @@ function Update () {
 	// Regenerate chain capacity
 	actionCfg.UpdateChainCapacityRegen();
 	
-	
+	// Degenerate flinch stacks
+	currentState.UpdateFlinchStackDegen();
 	
 	var displacement = Vector3.zero;
 	displacement += Vector3(groundMovement.walkSpeed, 0, 0) * Time.deltaTime;
@@ -547,7 +563,11 @@ function ApplyKnockback(direction, knockback) {
 function ApplyFlinch(duration) {
 	if (!currentState.isDead) {
 		//Debug.Log(duration);
-		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration, currentState.flinchDurationEnd);
+		currentState.flinchStack++;
+		var reduction = Mathf.Max(0, (1 - currentState.flinchStack * currentState.flinchStackReduction));
+		//Debug.Log(duration + " " + reduction*duration + " " + currentState.flinchStack);
+		
+		currentState.flinchDurationEnd = Mathf.Max(Time.time + duration*reduction, currentState.flinchDurationEnd);
 	
 		if(transform.Find(hitLocation) != null)
 		{

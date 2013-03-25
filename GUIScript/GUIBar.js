@@ -86,10 +86,13 @@ function OnGUI () {
 	}
 	else
 	{
-		GUI.BeginGroup(Rect (Screen.width - 300, 100, 320, 50));
-		var enemiesRemainText = enemiesRemaining.ToString() + " enemies remaining!";
-		GUI.Label (Rect (0, 0, ArrowDim.x, ArrowDim.y), enemiesRemainText, chainStyle);
-		GUI.EndGroup();
+		if (enemiesRemaining > 0)
+		{
+			GUI.BeginGroup(Rect (Screen.width - 300, 100, 320, 50));
+			var enemiesRemainText = enemiesRemaining.ToString() + " enemies remaining!";
+			GUI.Label (Rect (0, 0, ArrowDim.x, ArrowDim.y), enemiesRemainText, chainStyle);
+			GUI.EndGroup();
+		}
 	}
 	
 		

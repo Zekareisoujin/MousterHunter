@@ -18,7 +18,7 @@ class Calculator {
 		return dmg;*/
 		//return Mathf.Max(1.0, attackPower * (1 - defensePower / (attackPower * 2 ) ) );
 		
-		return attackPower * (Mathf.Pow(2.0, (attackPower/30 - 1)));
+		return attackPower * (Mathf.Pow(2.0, ((attackPower-defensePower)/30 - 1)));
 	}
 	
 	function CalculateFlinchDuration(impactPower, resiliencePower) : float {

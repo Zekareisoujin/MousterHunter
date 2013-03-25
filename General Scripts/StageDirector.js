@@ -1,4 +1,4 @@
-// Stage variable
+// Stage variables
 var stageName;
 var boundaries 	: GameObject[];
 var playerCharacterSpawnPoint : GameObject;
@@ -6,11 +6,15 @@ var sceneTrigger: GameObject;
 var mainCam		: Camera;
 var mainCamScript: CameraFocus;
 
+// Player variables
 var playerCharacterName : String;
-var playerCharacter	: GameObject;
+var playerCharacter		: GameObject;
 
-var guiLifeBar : GameObject;
+// HUD variables
+var guiHUD 			: GameObject;
+var guiHUDScript 	: GUIBar;
 
+// Stage landmark
 var boundLeftIdx;
 var boundRightIdx;
 var boundLeft;
@@ -54,7 +58,9 @@ function Start () {
 	sceneTrigger = Instantiate(sceneTrigger, Vector3.zero, Quaternion.identity);
 	mainCam = Camera.main;
 	mainCamScript = mainCam.GetComponent(CameraFocus);
-	dataCollector.Initialize();
+	//dataCollector.Initialize();
+	dataCollector.RegisterTotalEnemy(sceneList);
+	difficultyDirector.isEnabled = rm.GetDifficultyTuning();
 	
 	SpawnPlayerCharacter();
 	
@@ -63,6 +69,7 @@ function Start () {
 	//For testing:
 	//playerCharacter = GameObject.Find("Main Camera").GetComponent(CameraFocus).target;
 	playerCharacter.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_PLAYER);
+	dataCollector.RegisterCharacterUsed(playerCharacterName);
 	
 	sceneTrigger.GetComponent(SceneTrigger).director = gameObject;
 	sceneTrigger.GetComponent(SceneTrigger).target = playerCharacter.gameObject;
@@ -74,15 +81,15 @@ function Start () {
 function SpawnPlayerCharacter() {
 	var id = rm.GetSelectedCharacter();
 	playerCharacter = Instantiate(unitType[id], playerCharacterSpawnPoint.transform.position, Quaternion.identity);
-	playerCharacterName = playerCharacter.GetComponent(CharacterActionController).name;
+	playerCharacterName = playerCharacter.GetComponent(CharacterActionController).characterType;
 	playerCharacter.GetComponent(CharacterActionController).floatingTextColor = ResourceManager.FLOATING_TEXT_COLOR[ResourceManager.TEAM_ID_PLAYER];
 	
 	mainCam.transform.position = playerCharacter.transform.position;
 	mainCamScript.target = playerCharacter;
 	
-	guiLifeBar = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
-	//playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
-	guiLifeBar.GetComponent(GUIBar).playerCharacter = playerCharacter;
+	guiHUD = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
+	guiHUDScript = guiHUD.GetComponent(GUIBar);
+	guiHUDScript.playerCharacter = playerCharacter;
 }
 
 function StartGame() {
@@ -91,6 +98,7 @@ function StartGame() {
 	difficultyDirector.Initialize();
 	currentDifficultyLevel = difficultyDirector.GetCurrentDifficultyLevel();
 	InitializeCurrentScene();
+	guiHUDScript.showArrow = true;
 }
 
 function ForwardScene() {
@@ -121,8 +129,9 @@ function InitializeCurrentScene() {
 
 function SceneTriggered(){
 	SpawnEnemiesForCurrentScene();
-	guiLifeBar.GetComponent(GUIBar).showArrow = false;
+	guiHUDScript.showArrow = false;
 	LockScene(true);
+	guiHUDScript.enemiesRemaining = enemyList.length;
 }
 
 function SpawnEnemiesForCurrentScene() {
@@ -148,7 +157,7 @@ function SpawnEnemiesForCurrentScene() {
 
 function SceneFinished(){
 	LockScene(false);
-	guiLifeBar.GetComponent(GUIBar).showArrow = true;
+	guiHUDScript.showArrow = true;
 	ForwardScene();
 }
 
@@ -164,6 +173,7 @@ function LockScene(isLock) {
 }
 
 function GameOver() {
+	dataCollector.RegisterCompletion(currentSceneIdx, sceneList.length);
 	dataCollector.StageEnd();
 }
 
@@ -173,8 +183,11 @@ function ReportDeath(casualty) {
 		//Debug.Log("here");
 		mainCamScript.ClearFocus();
 		// Apply player death logic
+		GameOver();
 	} else {
 		enemyList.Remove(casualty);
+		dataCollector.RegisterEnemyKilled();
+		guiHUDScript.enemiesRemaining = enemyList.length;
 		
 		if (enemyList.length == 0)
 			SceneFinished();
