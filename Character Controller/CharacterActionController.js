@@ -323,7 +323,7 @@ function WaitForActionPreparationEnd(action, length, recordID) {
 		StartCoroutine(WaitForActionEnd(action, duration));
 		
 		if (action.actionEffect) {
-		var spawnPoint = transform.Find(action.actionSpawnPoint);
+			var spawnPoint = transform.Find(action.actionSpawnPoint);
 			actionEffect = Instantiate(Resources.Load(action.actionPath), spawnPoint.position, Quaternion.identity);
 			actionEffect.transform.parent = spawnPoint.transform;
 			var effectScript = actionEffect.GetComponent(GeneralEffectScript);

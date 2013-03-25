@@ -84,8 +84,10 @@ class ResourceManager {
 		//smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
 		spin.knockback 	= Vector3(1.0, 0, 0);
 		spin.movement 	= Vector3(10.0, 2.0, 0);
+		spin.AddActionEffect("SpinningSoundEffect", "root/hit");
 		thrust.movement = Vector3(8.0, 12.0, 0);
 		thrust.knockback = Vector3(2.0, 0, 0);
+		thrust.AddActionEffect("SpinningSoundEffect", "root/hit");
 		//thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
 		wwind.movement = Vector3(5.0, 0, 0);
 		wwind.knockback = Vector3(2.0, 0, 0);
@@ -144,6 +146,7 @@ class ResourceManager {
 		flipKunai.AddExtraEffect("KunaiSpawner", "root/hit", 0.1);
 		vortex.movement = Vector3(0, 15.0, 0);
 		vortex.knockback = Vector3(0, 5.0, 0);
+		vortex.AddActionEffect("SpinningSoundEffect", "root/hit");
 		dash.movement = Vector3(10.0, 2.0, 0);
 		dash.knockback = Vector3(3.0, 3.0, 0);
 		
@@ -231,7 +234,7 @@ class ResourceManager {
 		var standardStage = new Array();
 		
 		stdsc1 = new SceneInfo(0, 1);
-		stdsc1.AddEnemy(UNIT_TYPE_SOLDIER, 3);
+		stdsc1.AddEnemy(UNIT_TYPE_ARCHER, 3);
 		standardStage.Add(stdsc1);
 		
 		stdsc2 = new SceneInfo(1, 2);
