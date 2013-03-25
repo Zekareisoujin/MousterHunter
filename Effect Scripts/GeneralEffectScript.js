@@ -14,10 +14,17 @@ var oldTarget : Array = new Array();
 
 var lifetime : float;
 
+var audioClip : AudioClip[];
+
 function Start () {
 	calc = Calculator.GetCalculator();
 	recordID = -1;
 	Destroy(gameObject, lifetime);
+	if (audio != null) {
+		if (audioClip.length != 0)
+			audio.clip = audioClip[Random.Range(0, audioClip.length)];
+		audio.Play();
+	}
 }
 
 function SetParent(parent) {
@@ -77,3 +84,5 @@ function Contains(arr : Array, elem) : boolean {
 
 function Update() {
 }
+
+@script RequireComponent(AudioSource);
