@@ -14,16 +14,22 @@ var oldTarget : Array = new Array();
 
 var lifetime : float;
 
-var audioClip : AudioClip[];
+var is3DSound	 = false;
+var OnSpawnSound : AudioClip[];
+var OnImpactSound: AudioClip[];
 
 function Start () {
 	calc = Calculator.GetCalculator();
 	recordID = -1;
 	Destroy(gameObject, lifetime);
-	if (audio != null) {
-		if (audioClip.length != 0)
-			audio.clip = audioClip[Random.Range(0, audioClip.length)];
-		audio.Play();
+	
+	// On-spawn sound effect
+	if (audio != null && OnSpawnSound.length != 0) {
+		audio.clip = OnSpawnSound[Random.Range(0, OnSpawnSound.length)];
+		if (is3DSound)
+			audio.Play();	
+		else
+			CustomAudioSource.PlayClipAtPoint(audio.clip, transform.position);
 	}
 }
 
@@ -66,6 +72,15 @@ function CheckHit(other : Collider) {
 		
 		// Record the hit:
 		ResourceManager.GetResourceManager().GetCurrentActiveDataCollector().RegisterSuccessfulAttack(recordID);
+		
+		// On-impact sound effect
+		if (audio != null && OnImpactSound.length != 0) {
+			audio.clip = OnImpactSound[Random.Range(0, OnImpactSound.length)];
+			if (!is3DSound)
+				CustomAudioSource.PlayClipAtPoint(audio.clip, transform.position);
+			else if (audio.enabled)
+				audio.Play();
+		}
 	}
 	
 }
@@ -84,5 +99,6 @@ function Contains(arr : Array, elem) : boolean {
 
 function Update() {
 }
+
 
 @script RequireComponent(AudioSource);

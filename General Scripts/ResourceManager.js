@@ -29,6 +29,9 @@ class ResourceManager {
 	public static final var TEAM_ID_PLAYER		= 0;
 	public static final var TEAM_ID_AI_ENEMY	= 1;
 	
+	public static final var FLOATING_TEXT_COLOR = [ Color(1, 0, 0),
+											Color(1, 1, 1) ];
+	
 	function ResourceManager() {
 		//The line below get called multiple time. Fuck unity.
 		//Debug.Log("called: " + called++);
@@ -84,8 +87,10 @@ class ResourceManager {
 		//smash.AddExtraEffect("SmashEffect", "root/spine/chest/shoulder_r/elbow_r/wrist_r/axeBladeTip", 0.5);
 		spin.knockback 	= Vector3(1.0, 0, 0);
 		spin.movement 	= Vector3(10.0, 2.0, 0);
+		spin.AddActionEffect("SpinningSoundEffect", "root/hit");
 		thrust.movement = Vector3(8.0, 12.0, 0);
 		thrust.knockback = Vector3(2.0, 0, 0);
+		thrust.AddActionEffect("SpinningSoundEffect", "root/hit");
 		//thrust.AddPrepareEffect("Elements/WarriorSpirit", "origin");
 		wwind.movement = Vector3(5.0, 0, 0);
 		wwind.knockback = Vector3(2.0, 0, 0);
@@ -104,7 +109,7 @@ class ResourceManager {
 		var thunder2 = new CharacterAction("Thunder", 0.75, 1.0, 1, "attack2", "attack2Recover", weapon0, 0.0, "idle", 0.0);
 		var tornado = new CharacterAction("Tornado", 1.25, 1.4, 2, "raise", "raiseRecover", weapon0, 0.0, "idle", 0.5);
 		var meteor = new CharacterAction("Meteor", 1.50, 1.80, 2, "kame", "kameRecover", weapon0, 0.0, "idle", 1.0);
-		var torrent = new CharacterAction("Ice Torrent", 0.70, 2.5, 2, "point", "pointRecover", weapon0, 0.0, "idle", 0.8);
+		var torrent = new CharacterAction("Ice Torrent", 0.50, 2.5, 2, "point", "pointRecover", weapon0, 0.0, "idle", 0.8);
 		thunder1.knockback = Vector3(2.0, 0, 0);
 		thunder1.AddActionEffect("Elements/FlameAxe", "root/spine/chest/shoulder_r/elbow_r/wrist_r/hand_r");
 		thunder1.AddExtraEffect("Elements/Fireball", "root/spine/chest/shoulder_r/elbow_r/wrist_r/hand_r", 0.1);
@@ -144,6 +149,7 @@ class ResourceManager {
 		flipKunai.AddExtraEffect("KunaiSpawner", "root/hit", 0.1);
 		vortex.movement = Vector3(0, 15.0, 0);
 		vortex.knockback = Vector3(0, 5.0, 0);
+		vortex.AddActionEffect("SpinningSoundEffect", "root/hit");
 		dash.movement = Vector3(10.0, 2.0, 0);
 		dash.knockback = Vector3(3.0, 3.0, 0);
 		

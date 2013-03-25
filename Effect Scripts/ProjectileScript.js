@@ -43,6 +43,16 @@ class ProjectileScript extends GeneralEffectScript {
 			
 			if (!penetrate)
 				Destroy(gameObject);
+				
+			// On-impact sound effect
+			if (audio != null && OnImpactSound.length != 0) {
+				audio.clip = OnImpactSound[Random.Range(0, OnImpactSound.length)];
+				if (!is3DSound)
+					CustomAudioSource.PlayClipAtPoint(audio.clip, transform.position);
+				else if (audio.enabled)
+					audio.Play();
+			}
+				
 		}
 	}
 }

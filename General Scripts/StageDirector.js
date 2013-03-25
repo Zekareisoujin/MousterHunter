@@ -75,6 +75,7 @@ function SpawnPlayerCharacter() {
 	var id = rm.GetSelectedCharacter();
 	playerCharacter = Instantiate(unitType[id], playerCharacterSpawnPoint.transform.position, Quaternion.identity);
 	playerCharacterName = playerCharacter.GetComponent(CharacterActionController).name;
+	playerCharacter.GetComponent(CharacterActionController).floatingTextColor = ResourceManager.FLOATING_TEXT_COLOR[ResourceManager.TEAM_ID_PLAYER];
 	
 	mainCam.transform.position = playerCharacter.transform.position;
 	mainCamScript.target = playerCharacter;
@@ -132,6 +133,7 @@ function SpawnEnemiesForCurrentScene() {
 			var spawnPt = (Random.value < 0.5? spawnPointLeft: spawnPointRight);
 			var unit = Instantiate(unitType[enemyEntry.Key], spawnPt, Quaternion.identity);
 			unit.GetComponent(CharacterActionController).movementLane = (Random.value - 0.5) / 2;
+			unit.GetComponent(CharacterActionController).floatingTextColor = ResourceManager.FLOATING_TEXT_COLOR[ResourceManager.TEAM_ID_AI_ENEMY];
 			unit.GetComponent(CharacterStatus).SetTeamID(rm.TEAM_ID_AI_ENEMY);
 			unit.GetComponent(CharacterStatus).difficultyModifier = currentDifficultyLevel;
 			
