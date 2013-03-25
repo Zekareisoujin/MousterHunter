@@ -10,6 +10,9 @@ var characterType : String;
 
 var deathEffect 	: GameObject;
 var floatingText 	: GameObject;
+
+var floatingTextColor : Color;
+
 var permanentWeapon	: GameObject[];
 
 var animationSpeed = 1.0;
@@ -578,6 +581,7 @@ function DeathEffect() {
 function ShowFloatingText(displayText) {
 	var floatText = Instantiate(floatingText, transform.position, Quaternion.identity);
 	floatText.GetComponent(GUIFloatingText).SetText(displayText);
+	floatText.GetComponent(GUIFloatingText).SetColor(floatingTextColor);
 	Destroy(floatText, 5);
 }
 

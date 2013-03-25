@@ -1,4 +1,5 @@
 var displayText : String;
+var displayColor : Color;
 private var GetHitEffect : float;
 private var targY : float;
 private var PointPosition : Vector3;
@@ -14,7 +15,9 @@ function Start() {
 function OnGUI() {
 	var screenPos2 : Vector3 = Camera.main.camera.WorldToScreenPoint (PointPosition);
 	GetHitEffect += Time.deltaTime*30;
-	GUI.color = new Color (1.0f,1.0f,1.0f,1.0f - (GetHitEffect - 50) / 7);
+	displayColor.a -= (GetHitEffect - 50) / 7;
+	GUI.color = displayColor;
+	//GUI.color = new Color (1.0f,1.0f,1.0f,1.0f - (GetHitEffect - 50) / 7);
 	GUI.skin = PointSkinShadow;
 	GUI.Label (Rect (screenPos2.x+8 , targY-2, 80, 70), displayText);
 	GUI.skin = PointSkin;
@@ -27,4 +30,9 @@ function Update() {
 
 function SetText(text) {
 	displayText = text;
+}
+
+function SetColor(color : Color) 
+{
+	displayColor = color;
 }
