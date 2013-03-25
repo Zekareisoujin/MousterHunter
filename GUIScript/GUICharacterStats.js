@@ -6,6 +6,8 @@ var dim = Vector2(256, 32);
 var textDimx = 80;
 var textPosx = 10;
 
+var textBoxDim = Vector2(200, 40);
+
 var displayHeight = 20;
 
 var AttackBar : Texture2D; 
@@ -30,6 +32,9 @@ var selected : int;
 var character : GameObject;
 
 var CharacterName = "CharName";
+
+var userName = "";
+var diffTune = true;
 
 function OnGUI () {
 	GUI.BeginGroup ( Rect (pos.x, pos.y, dim.x + textDimx + textPosx, dim.y*6 + 10));
@@ -62,6 +67,17 @@ function OnGUI () {
 	GUI.BeginGroup ( Rect (textDimx, 0+5*displayHeight, displaySpd * dim.x, displayHeight));	
 	GUI.Label (Rect (0, 0, dim.x, dim.y), SpeedBar);				
 	GUI.EndGroup ();
+	
+	GUI.EndGroup ();
+	
+	
+	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y, textBoxDim.x + 20, textBoxDim.y + 52));
+	
+	GUI.Box (Rect (0, 0, textBoxDim.x + 20 , textBoxDim.y + 52), "Name");
+
+	userName = GUI.TextArea( Rect(10, 22, textBoxDim.x, textBoxDim.y), userName);
+	
+	diffTune = GUI.Toggle (Rect (30, textBoxDim.y + 22, textBoxDim.x, 20), diffTune, "Difficulty tuning");
 	
 	GUI.EndGroup ();
 }
