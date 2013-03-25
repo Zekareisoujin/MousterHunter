@@ -134,7 +134,7 @@ class ResourceManager {
 		var actionAttack2alt= new CharacterAction("Attack 2", 1.1, 1.1, 1, "attack2", "attack2Recover", weapon2, 0.05, "idle", 0.0);
 		var flipKunai = new CharacterAction("Backflip", 1.2, 1.2, 2, "flipKnife", "flipKnifeRecover", weapon0, 0.0, "idle", 0.0);
 		var vortex = new CharacterAction("Vortex", 1.5, 1.2, 2, "spin", "spinRecover", weapon12, 0.0, "idle", 0.0);
-		var dash = new CharacterAction("Assassin Rush", 0.9, 1.5, 2, "dashStrike", "dashStrikeRecover", weapon12, 0.0, "idle", 0.0);
+		var dash = new CharacterAction("Assassin Rush", 0.8, 1.5, 2, "dashStrike", "dashStrikeRecover", weapon12, 0.0, "idle", 0.0);
 		actionAttackalt.movement  = Vector3(5.0, 0.0, 0);
 		actionAttackalt.knockback  = Vector3(1.0, 1.0, 0);
 		actionAttack2alt.movement 	= Vector3(5.0, 0, 0);
