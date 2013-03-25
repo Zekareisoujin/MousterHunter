@@ -25,7 +25,7 @@ function Update() {
 	circle.transform.position = character[selected].transform.position;
 	circle.transform.position.y += circleVerticalOffset;
 	
-	if (Input.GetButtonDown("Fire1"))
+	if (Input.GetKeyDown("space"))
 		SelectCharacter();
 	
 	for (ch in character)

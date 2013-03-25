@@ -9,6 +9,8 @@ var mainCamScript: CameraFocus;
 var playerCharacterName : String;
 var playerCharacter	: GameObject;
 
+var guiLifeBar : GameObject;
+
 var boundLeftIdx;
 var boundRightIdx;
 var boundLeft;
@@ -77,9 +79,9 @@ function SpawnPlayerCharacter() {
 	mainCam.transform.position = playerCharacter.transform.position;
 	mainCamScript.target = playerCharacter;
 	
-	var guiLife = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
+	guiLifeBar = Instantiate(Resources.Load("GUIHealthDisplay"), Vector3.zero, Quaternion.identity);
 	//playerCharacter.GetComponent(CharacterStatus).lifeBarObject = guiLife;
-	guiLife.GetComponent(GUIBar).playerCharacter = playerCharacter;
+	guiLifeBar.GetComponent(GUIBar).playerCharacter = playerCharacter;
 }
 
 function StartGame() {
@@ -118,6 +120,7 @@ function InitializeCurrentScene() {
 
 function SceneTriggered(){
 	SpawnEnemiesForCurrentScene();
+	guiLifeBar.GetComponent(GUIBar).showArrow = false;
 	LockScene(true);
 }
 
@@ -143,6 +146,7 @@ function SpawnEnemiesForCurrentScene() {
 
 function SceneFinished(){
 	LockScene(false);
+	guiLifeBar.GetComponent(GUIBar).showArrow = true;
 	ForwardScene();
 }
 

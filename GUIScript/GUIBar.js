@@ -26,6 +26,9 @@ var playerCharacter	: GameObject;
 var playerCharacterStat;
 var playerCharacterController;
 
+//set this to show number of enemies remaining
+var enemiesRemaining = 0;
+
 //set this to true to show blinking arrow
 var showArrow = false;
 
@@ -58,26 +61,38 @@ function OnGUI () {
 	
 	GUI.BeginGroup (Rect (Screen.width - 200 , 40, 200, 100));
 		
-		var chainDisplay = chainCapacityCurrent.ToString() + '/' + chainCapacityMax.ToString();
+		var chainDisplay = chainCapacityCurrent.ToString() + '/' + chainCapacityMax.ToString() + " Chains";
 		GUI.Label (Rect (0, 0, 100, dim.y), chainDisplay , chainStyle);
 		
-		var chainComboDisplay = chainLength.ToString() + " COMBO !!!";
-		GUI.Label (Rect (0, 32, 200, dim.y), chainComboDisplay , chainStyle);
+		if(chainLength > 1)
+		{
+			var chainComboDisplay = chainLength.ToString() + " COMBOS !!!";
+			GUI.Label (Rect (0, 32, 200, dim.y), chainComboDisplay , chainStyle);
+		}
 	
 	GUI.EndGroup();
 	
 	
-	GUI.BeginGroup(Rect (Screen.width - ArrowDim.x - 30, Screen.height / 2 - ArrowDim.y / 2, ArrowDim.x, ArrowDim.y));
+	
 		
 	if(showArrow)
-	{
+	{	
+		GUI.BeginGroup(Rect (Screen.width - ArrowDim.x - 30, Screen.height / 2 - ArrowDim.y / 2, ArrowDim.x, ArrowDim.y));
 		if(Time.time % 1.5 < 1)
 		{		
 			GUI.Label (Rect (0, 0, ArrowDim.x, ArrowDim.y), arrowImage);
 		}
+		GUI.EndGroup();	
+	}
+	else
+	{
+		GUI.BeginGroup(Rect (Screen.width - 300, 100, 320, 50));
+		var enemiesRemainText = enemiesRemaining.ToString() + " enemies remaining!";
+		GUI.Label (Rect (0, 0, ArrowDim.x, ArrowDim.y), enemiesRemainText, chainStyle);
+		GUI.EndGroup();
 	}
 	
-	GUI.EndGroup();		
+		
 }
 
 function Update() {
