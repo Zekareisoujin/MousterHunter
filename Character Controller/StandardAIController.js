@@ -23,8 +23,8 @@ var attackCooldownTime			: float;
 // Reaction stats
 var reactionSpeedBase 	= 1.50;
 var reactionSpeedVar  	= 0.50;
-var attackCooldownBase 	= 3.00;
-var attackCooldownVar 	= 1.00;
+var attackCooldownBase 	= 3.50;
+var attackCooldownVar 	= 1.50;
 var difficultyModifier 	= 1.00;
 
 // Time control, used to issue keystroke
