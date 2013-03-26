@@ -16,6 +16,7 @@ var estimatedDamageTaken : Array;
 
 var totalDifficultyRating;
 var currentSceneIdx;
+var baseDifficultyLevel : float;
 var currentDifficultyLevel : float;
 
 // To adjust difficulty level
@@ -41,16 +42,11 @@ function Initialize() {
 	
 	estimatedDamageTaken = new Array(sceneList.length);
 	EstimateDamageTaken();
-	/*for (scene in sceneList) 
-		totalDifficultyRating += scene.GetDifficultyRating();
-	for (scene in sceneList)
-		estimatedDamageTaken.Add(maxLife * scene.GetDifficultyRating() / totalDifficultyRating);*/
 	
-	/*for (dmg in estimatedDamageTaken)
-		Debug.Log(dmg);*/
+	baseDifficultyLevel = 1.00;
 	currentDifficultyLevel = 1.00;
 	damageTakenSoFar = 0.0;
-	dampenerConstant = 0.5; //To be found out using experiment
+	dampenerConstant = 1.5; //To be found out using experiment
 	
 	difficultyLog = new Array();
 	performanceLog = new Array();
@@ -82,6 +78,9 @@ function CalibrateDifficulty() : float {
 	
 	difficultyLog.Add(currentDifficultyLevel);
 	performanceLog.Add(playerPerformance);
+	
+	// Possible change
+	playerPerformance *= sceneList[director.currentSceneIdx].GetDifficultyRating() / totalDifficultyRating;
 	
 	var newModifier = Mathf.Exp(playerPerformance * dampenerConstant);
 	currentDifficultyLevel /= newModifier;
