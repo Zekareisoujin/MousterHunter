@@ -63,10 +63,9 @@ function CheckHit(other : Collider) {
 		var direction = (diffx >= 0? 1: -1);
 		
 		// Apply effects:
+		defenderController.ApplyKnockback(direction, knockback);
 		other.SendMessage("ApplyDamage", dmg);
 		other.SendMessage("ApplyFlinch", flinch);
-		
-		defenderController.ApplyKnockback(direction, knockback);
 		
 		oldTarget.Add(other);
 		

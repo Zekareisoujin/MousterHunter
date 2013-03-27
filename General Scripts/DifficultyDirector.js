@@ -46,7 +46,7 @@ function Initialize() {
 	baseDifficultyLevel = 1.00;
 	currentDifficultyLevel = 1.00;
 	damageTakenSoFar = 0.0;
-	dampenerConstant = 1.5; //To be found out using experiment
+	dampenerConstant = 2.0; //To be found out using experiment
 	
 	difficultyLog = new Array();
 	performanceLog = new Array();
