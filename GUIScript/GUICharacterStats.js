@@ -86,19 +86,24 @@ function OnGUI () {
 	
 	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y + textBoxDim.y + 52, 200, 100));
 	
-	if(GUI.Button ( Rect (10, 10, buttonDim.x, buttonDim.y), "No Traps"))
+	if(GUI.Button ( Rect (10, 10, buttonDim.x, buttonDim.y), "Calibration Stage"))
 	{
 		stageSelected = 1;
 	}
 	
-	if(GUI.Button ( Rect (10, 10 + buttonDim.y, buttonDim.x, buttonDim.y), "Simple Traps"))
+	if(GUI.Button ( Rect (10, 10 + buttonDim.y, buttonDim.x, buttonDim.y), "Standard Stage"))
 	{
 		stageSelected = 2;
 	}
-		
-	if(GUI.Button ( Rect (10, 10 + 2 * buttonDim.y, buttonDim.x, buttonDim.y), "Advanced Traps"))
+	
+	if(GUI.Button ( Rect (10, 10 + 2 * buttonDim.y, buttonDim.x, buttonDim.y), "Simple Traps"))
 	{
 		stageSelected = 3;
+	}
+		
+	if(GUI.Button ( Rect (10, 10 + 3 * buttonDim.y, buttonDim.x, buttonDim.y), "Advanced Traps"))
+	{
+		stageSelected = 4;
 	}
 	
 	

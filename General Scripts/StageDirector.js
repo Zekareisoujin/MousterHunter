@@ -53,7 +53,7 @@ function Awake() {
 
 function Start () {
 	stageName = rm.GetSelectedStage();
-	stageName = "Standard Stage"; //test
+	//stageName = "Standard Stage"; //test
 	sceneList = rm.GetSceneInfo(stageName);
 	sceneTrigger = Instantiate(sceneTrigger, Vector3.zero, Quaternion.identity);
 	mainCam = Camera.main;
