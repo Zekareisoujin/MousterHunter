@@ -39,6 +39,14 @@ class SpearTrap extends GeneralEffectScript
 				}
 			}
 		}
+		else
+		{
+			if(Time.time > AttackRate+lastMove)
+			{
+				lastMove = Time.time;
+				oldTarget.Clear();
+			}
+		}
 		
 	}
 
