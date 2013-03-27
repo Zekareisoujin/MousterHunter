@@ -278,18 +278,38 @@ class ResourceManager {
 		standardStage.Add(stdsc8);
 		
 		stdsc9 = new SceneInfo(8, 9);
-		stdsc9.AddEnemy(UNIT_TYPE_SOLDIER, 8);
+		stdsc9.AddEnemy(UNIT_TYPE_SOLDIER, 5);
 		stdsc9.AddEnemy(UNIT_TYPE_ARCHER, 4);
-		stdsc9.AddEnemy(UNIT_TYPE_BRUTE, 4);
+		stdsc9.AddEnemy(UNIT_TYPE_BRUTE, 3);
 		standardStage.Add(stdsc9);
 		
 		stdsc10 = new SceneInfo(10, 11);
-		stdsc10.AddEnemy(UNIT_TYPE_SOLDIER, 12);
-		stdsc10.AddEnemy(UNIT_TYPE_ARCHER, 8);
-		stdsc10.AddEnemy(UNIT_TYPE_BRUTE, 6);
+		stdsc10.AddEnemy(UNIT_TYPE_SOLDIER, 8);
+		stdsc10.AddEnemy(UNIT_TYPE_ARCHER, 6);
+		stdsc10.AddEnemy(UNIT_TYPE_BRUTE, 4);
 		standardStage.Add(stdsc10);
 		
 		StageDirectory.Add("Standard Stage", standardStage);
+		
+		// Calibration Stage:
+		var calib = new Array();
+		var calibscn;
+		
+		for (var i=0; i<9; i++) {
+			calibscn = new SceneInfo(i, i+1);
+			calibscn.AddEnemy(UNIT_TYPE_SOLDIER, 4);
+			calibscn.AddEnemy(UNIT_TYPE_ARCHER, 3);
+			calibscn.AddEnemy(UNIT_TYPE_BRUTE, 2);
+			calib.Add(calibscn);
+		}
+		
+		calibscn = new SceneInfo(10, 11);
+		calibscn.AddEnemy(UNIT_TYPE_SOLDIER, 4);
+		calibscn.AddEnemy(UNIT_TYPE_ARCHER, 3);
+		calibscn.AddEnemy(UNIT_TYPE_BRUTE, 2);
+		calib.Add(calibscn);
+		
+		StageDirectory.Add("Calibration Stage", calib);
 		
 	}
 	

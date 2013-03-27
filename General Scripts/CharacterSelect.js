@@ -48,4 +48,5 @@ function SelectCharacter() {
 	rm.SetSelectedStage(guiCharacterSelect.guiStageArray[guiCharacterSelect.stageSelected - 1]);
 	Application.LoadLevel(guiCharacterSelect.guiSceneArray[guiCharacterSelect.stageSelected - 1]);
 
+
 }

@@ -90,10 +90,10 @@ function OnGUI () {
 	
 	GUI.EndGroup ();
 	
-	
 	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y + textBoxDim.y + 52, 200, guiButtonArray.length * buttonDim.y + 20 ));
 	
 	for(var i = 0; i < guiButtonArray.length; ++i)
+
 	{
 		if(GUI.Button ( Rect (10, 10 + i*buttonDim.y, buttonDim.x, buttonDim.y), guiButtonArray[i]))
 		{
