@@ -7,6 +7,7 @@ var textDimx = 80;
 var textPosx = 10;
 
 var textBoxDim = Vector2(200, 40);
+var buttonDim = Vector2(200, 30);
 
 var displayHeight = 20;
 
@@ -35,6 +36,8 @@ var CharacterName = "CharName";
 
 var userName = "";
 var diffTune = true;
+
+var stageSelected = 0;
 
 function OnGUI () {
 	GUI.BeginGroup ( Rect (pos.x, pos.y, dim.x + textDimx + textPosx, dim.y*6 + 10));
@@ -80,6 +83,27 @@ function OnGUI () {
 	diffTune = GUI.Toggle (Rect (30, textBoxDim.y + 22, textBoxDim.x, 20), diffTune, "Difficulty tuning");
 	
 	GUI.EndGroup ();
+	
+	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y + textBoxDim.y + 52, 200, 100));
+	
+	if(GUI.Button ( Rect (10, 10, buttonDim.x, buttonDim.y), "No Traps"))
+	{
+		stageSelected = 1;
+	}
+	
+	if(GUI.Button ( Rect (10, 10 + buttonDim.y, buttonDim.x, buttonDim.y), "Simple Traps"))
+	{
+		stageSelected = 2;
+	}
+		
+	if(GUI.Button ( Rect (10, 10 + 2 * buttonDim.y, buttonDim.x, buttonDim.y), "Advanced Traps"))
+	{
+		stageSelected = 3;
+	}
+	
+	
+	
+	GUI.EndGroup();
 }
 
 function Start () {
