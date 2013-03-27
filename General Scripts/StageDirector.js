@@ -184,11 +184,21 @@ function ReportDeath(casualty) {
 		// Apply player death logic
 		GameOver();
 	} else {
-		enemyList.Remove(casualty);
-		dataCollector.RegisterEnemyKilled();
+		if (Contains(enemyList, casualty)){
+			enemyList.Remove(casualty);
+			dataCollector.RegisterEnemyKilled();
+		}
 		guiHUDScript.enemiesRemaining = enemyList.length;
 		
 		if (enemyList.length == 0)
 			SceneFinished();
 	}
+}
+
+// Helper functions.. possibly have to write my own array class
+function Contains(arr : Array, elem) : boolean {
+	for (var i=0; i<arr.length; i++) {
+		if (arr[i].GetInstanceID() == elem.GetInstanceID()) return true;
+	}
+	return false;
 }
