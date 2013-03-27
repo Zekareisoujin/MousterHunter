@@ -12,6 +12,7 @@ class DataCollector extends MonoBehaviour{
 	var difficulty_tuning 	: boolean;
 	  
 	// Stage completion time
+	var selected_stage : String;
 	var time_start	: float;
 	var time_end	: float;
 	var enemy_killed: int;
@@ -135,6 +136,10 @@ class DataCollector extends MonoBehaviour{
 		area_total = areaTotal;
 	}
 	
+	function RegisterStageName(stage) {
+		selected_stage = stage;
+	}
+	
 	function WriteLogToFile() {
 		var now = System.DateTime.Now;
 		var filePath = Application.dataPath;
@@ -154,6 +159,7 @@ class DataCollector extends MonoBehaviour{
 		fs.WriteLine(now);
 		fs.WriteLine("Player: " + player_name);
 		fs.WriteLine("Character: " + character_used);
+		fs.WriteLine("Stage: " + selected_stage);
 		fs.WriteLine("Difficulty tuning: " + difficulty_tuning);
 		
 		fs.WriteLine("----------------------------------------");

@@ -13,7 +13,7 @@ class TrapAIController extends SampleAIController {
 			enemy = cam.target; 
 		}
 		//controller.horizontalAxisRaw = 0;
-		if (isActive) {
+		if (isActive && enemy != null) {
 			var diffx = enemy.transform.position.x - transform.position.x;
 			//controller.attackCommand = ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.direction.x > 0));
 			if ((Mathf.Abs(diffx) <= attackRange) && (diffx * bearing.facingDirection.x > 0)){

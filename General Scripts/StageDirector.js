@@ -53,13 +53,13 @@ function Awake() {
 
 function Start () {
 	stageName = rm.GetSelectedStage();
-	//stageName = "Standard Stage"; //test
 	sceneList = rm.GetSceneInfo(stageName);
 	sceneTrigger = Instantiate(sceneTrigger, Vector3.zero, Quaternion.identity);
 	mainCam = Camera.main;
 	mainCamScript = mainCam.GetComponent(CameraFocus);
 	//dataCollector.Initialize();
 	dataCollector.RegisterTotalEnemy(sceneList);
+	dataCollector.RegisterStageName(rm.GetSelectedStage());
 	difficultyDirector.isEnabled = rm.GetDifficultyTuning();
 	
 	SpawnPlayerCharacter();

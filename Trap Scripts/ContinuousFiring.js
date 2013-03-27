@@ -18,8 +18,6 @@ function Update () {
 		{		
 			controller.attackCommand = true;
 			lastShot = Time.time;			
-			Debug.Log(Time.time + "fire");
-			Debug.Log(controller.attackCommand);
 		}
 		else
 		{					

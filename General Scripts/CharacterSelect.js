@@ -45,7 +45,7 @@ function SelectCharacter() {
 	rm.SetPlayerName(guiCharacterSelect.userName);
 	rm.SetDifficultyTuning(guiCharacterSelect.diffTune);
 	
-	rm.SetSelectedStage(guiCharacterSelect.guiStageArray[guiCharacterSelect.stageSelected - 1]);
+	rm.SetSelectedStage(guiCharacterSelect.guiButtonArray[guiCharacterSelect.stageSelected - 1]);
 	Application.LoadLevel(guiCharacterSelect.guiSceneArray[guiCharacterSelect.stageSelected - 1]);
 
 

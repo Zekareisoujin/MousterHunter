@@ -13,7 +13,7 @@ var guiButtonArray : String[];
 
 var guiSceneArray : String[];
 
-var guiStageArray : String[];
+//var guiStageArray : String[];
 
 var displayHeight = 20;
 

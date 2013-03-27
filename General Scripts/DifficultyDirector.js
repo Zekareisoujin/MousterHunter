@@ -61,6 +61,9 @@ function EstimateDamageTaken() {
 		totalDifficultyRating += sceneList[i].GetDifficultyRating();
 	for (i=currentSceneIdx; i<sceneList.length; i++)
 		estimatedDamageTaken[i] = life * sceneList[i].GetDifficultyRating() / totalDifficultyRating;
+		
+	//for (scene in sceneList)
+	//	Debug.Log(scene.GetDifficultyRating());
 }
 
 function CalibrateDifficulty() : float {
@@ -84,7 +87,11 @@ function CalibrateDifficulty() : float {
 	
 	var newModifier = Mathf.Exp(playerPerformance * dampenerConstant);
 	currentDifficultyLevel /= newModifier;
-	return currentDifficultyLevel;
+	
+	if (isEnabled)
+		return currentDifficultyLevel;
+	else
+		return 1.0;
 }
 
 function GetCurrentDifficultyLevel() {

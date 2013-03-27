@@ -273,7 +273,7 @@ class ResourceManager {
 		standardStage.Add(stdsc7);
 		
 		stdsc8 = new SceneInfo(7, 8);
-		stdsc8.AddEnemy(UNIT_TYPE_SOLDIER, 10);
+		stdsc8.AddEnemy(UNIT_TYPE_SOLDIER, 8);
 		stdsc8.AddEnemy(UNIT_TYPE_ARCHER, 6);
 		standardStage.Add(stdsc8);
 		
@@ -284,12 +284,14 @@ class ResourceManager {
 		standardStage.Add(stdsc9);
 		
 		stdsc10 = new SceneInfo(10, 11);
-		stdsc10.AddEnemy(UNIT_TYPE_SOLDIER, 8);
-		stdsc10.AddEnemy(UNIT_TYPE_ARCHER, 6);
-		stdsc10.AddEnemy(UNIT_TYPE_BRUTE, 4);
+		stdsc10.AddEnemy(UNIT_TYPE_SOLDIER, 6);
+		stdsc10.AddEnemy(UNIT_TYPE_ARCHER, 4);
+		stdsc10.AddEnemy(UNIT_TYPE_BRUTE, 5);
 		standardStage.Add(stdsc10);
 		
 		StageDirectory.Add("Standard Stage", standardStage);
+		StageDirectory.Add("Simple Traps Stage", standardStage);
+		StageDirectory.Add("Advanced Traps Stage", standardStage);
 		
 		// Calibration Stage:
 		var calib = new Array();
