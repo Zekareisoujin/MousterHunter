@@ -105,12 +105,11 @@ function ForwardScene() {
 	currentSceneIdx++;
 	if (currentSceneIdx >= sceneList.length) {
 		GameOver();
+	}else {
+		currentDifficultyLevel = difficultyDirector.CalibrateDifficulty();
+		difficultyDirector.EstimateDamageTaken();
+		InitializeCurrentScene();
 	}
-	
-	//Call this here:
-	currentDifficultyLevel = difficultyDirector.CalibrateDifficulty();
-	difficultyDirector.EstimateDamageTaken();
-	InitializeCurrentScene();
 }
 
 function InitializeCurrentScene() {

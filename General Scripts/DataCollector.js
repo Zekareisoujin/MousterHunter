@@ -173,9 +173,9 @@ class DataCollector extends MonoBehaviour{
 			fs.WriteLine();
 			fs.WriteLine("----------------------------------------");
 			fs.WriteLine("Difficulty Director Log:");
-			fs.WriteLine("Area #: <difficulty level> - <performance level>");
+			fs.WriteLine("Area #: <difficulty level> :: <performance level>");
 			for (var i=0; i<dd.difficultyLog.length && i<dd.performanceLog.length; i++) {
-				fs.WriteLine("Area " + i + ": " + dd.difficultyLog[i] + " - " + dd.performanceLog[i]);
+				fs.WriteLine("Area " + i + ": " + dd.difficultyLog[i] + " :: " + dd.performanceLog[i]);
 			}
 		}
 		
