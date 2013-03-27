@@ -9,6 +9,12 @@ var textPosx = 10;
 var textBoxDim = Vector2(200, 40);
 var buttonDim = Vector2(200, 30);
 
+var guiButtonArray : String[];
+
+var guiSceneArray : String[];
+
+var guiStageArray : String[];
+
 var displayHeight = 20;
 
 var AttackBar : Texture2D; 
@@ -84,24 +90,16 @@ function OnGUI () {
 	
 	GUI.EndGroup ();
 	
-	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y + textBoxDim.y + 52, 200, 100));
 	
-	if(GUI.Button ( Rect (10, 10, buttonDim.x, buttonDim.y), "No Traps"))
+	GUI.BeginGroup ( Rect (Screen.width - textBoxDim.x - 100 , pos.y + textBoxDim.y + 52, 200, guiButtonArray.length * buttonDim.y + 20 ));
+	
+	for(var i = 0; i < guiButtonArray.length; ++i)
 	{
-		stageSelected = 1;
+		if(GUI.Button ( Rect (10, 10 + i*buttonDim.y, buttonDim.x, buttonDim.y), guiButtonArray[i]))
+		{
+			stageSelected = i+1;
+		}
 	}
-	
-	if(GUI.Button ( Rect (10, 10 + buttonDim.y, buttonDim.x, buttonDim.y), "Simple Traps"))
-	{
-		stageSelected = 2;
-	}
-		
-	if(GUI.Button ( Rect (10, 10 + 2 * buttonDim.y, buttonDim.x, buttonDim.y), "Advanced Traps"))
-	{
-		stageSelected = 3;
-	}
-	
-	
 	
 	GUI.EndGroup();
 }

@@ -41,17 +41,11 @@ function SelectCharacter() {
 	//Debug.Log("selecting " + character[selected].GetComponent(CharacterActionController).name);
 	rm.SetSelectedCharacter(character[selected].GetComponent(CharacterActionController).unitTypeID);
 		
-	rm.SetSelectedStage("Standard Stage");	// hard coded for now
+	//rm.SetSelectedStage("Standard Stage");	// hard coded for now
 	rm.SetPlayerName(guiCharacterSelect.userName);
 	rm.SetDifficultyTuning(guiCharacterSelect.diffTune);
 	
-	if(guiCharacterSelect.stageSelected == 1)
-	{
-		Application.LoadLevel("Demo");
-	}
-	else if(guiCharacterSelect.stageSelected == 2)
-	{
-		Application.LoadLevel("simpleTrap");
-	}
+	rm.SetSelectedStage(guiCharacterSelect.guiStageArray[guiCharacterSelect.stageSelected - 1]);
+	Application.LoadLevel(guiCharacterSelect.guiSceneArray[guiCharacterSelect.stageSelected - 1]);
 
 }
