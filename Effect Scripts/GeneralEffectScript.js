@@ -18,9 +18,12 @@ var is3DSound	 = false;
 var OnSpawnSound : AudioClip[];
 var OnImpactSound: AudioClip[];
 
-function Start () {
-	calc = Calculator.GetCalculator();
+function Awake() {
 	recordID = -1;
+	calc = Calculator.GetCalculator();
+}
+
+function Start () {
 	Destroy(gameObject, lifetime);
 	
 	// On-spawn sound effect
@@ -48,6 +51,7 @@ function SetEffectArm(attack, impact, knockback, ownerTeamID) {
 
 function SetRecordID(id) {
 	recordID = id;
+	Debug.Log("Setting : " + id);
 }
 
 function CheckHit(other : Collider) {
