@@ -11,7 +11,7 @@ var characterType : String;
 var deathEffect 	: GameObject;
 var floatingText 	: GameObject;
 
-@System.NonSerialized
+//@System.NonSerialized
 var floatingTextColor : Color;
 
 var permanentWeapon	: GameObject[];

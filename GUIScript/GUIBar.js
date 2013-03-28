@@ -21,6 +21,7 @@ var chainLength = 0;
 
 var labelStyle : GUIStyle;
 var chainStyle : GUIStyle;
+var gameOverStyle : GUIStyle;
 
 var playerCharacter	: GameObject;
 var playerCharacterStat;
@@ -32,9 +33,13 @@ var enemiesRemaining = 0;
 //set this to true to show blinking arrow
 var showArrow = false;
 
+// show gameover screen
+var showGameOver = false;
+
 function Start() {
 	playerCharacterStat = playerCharacter.GetComponent(CharacterStatus);
 	playerCharacterController = playerCharacter.GetComponent(CharacterActionController);
+	showGameOver = false;
 }
 
 function OnGUI () {
@@ -95,6 +100,11 @@ function OnGUI () {
 		}
 	}
 	
+	if (showGameOver) {
+		if (GUI.Button(Rect(0, 0, Screen.width, Screen.height), "GAME OVER", gameOverStyle)) {
+			Application.LoadLevel("character select");
+		}
+	}
 		
 }
 

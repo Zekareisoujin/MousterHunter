@@ -174,6 +174,8 @@ function LockScene(isLock) {
 function GameOver() {
 	dataCollector.RegisterCompletion(currentSceneIdx, sceneList.length);
 	dataCollector.StageEnd();
+	guiHUDScript.showArrow = false;
+	guiHUDScript.showGameOver = true;
 }
 
 // Event handler... not really
