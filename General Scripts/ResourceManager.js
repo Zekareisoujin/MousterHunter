@@ -111,7 +111,7 @@ class ResourceManager {
 		var thunder2 = new CharacterAction("Thunder", 0.75, 1.0, 1, "attack2", "attack2Recover", weapon0, 0.0, "idle", 0.0);
 		var tornado = new CharacterAction("Tornado", 1.25, 1.4, 2, "raise", "raiseRecover", weapon0, 0.0, "idle", 0.5);
 		var meteor = new CharacterAction("Meteor", 1.50, 1.80, 2, "kame", "kameRecover", weapon0, 0.0, "idle", 1.0);
-		var torrent = new CharacterAction("Ice Torrent", 0.50, 2.5, 2, "point", "pointRecover", weapon0, 0.0, "idle", 0.8);
+		var torrent = new CharacterAction("Ice Torrent", 0.40, 2.5, 2, "point", "pointRecover", weapon0, 0.0, "idle", 0.8);
 		thunder1.knockback = Vector3(2.0, 0, 0);
 		thunder1.AddActionEffect("Elements/FlameAxe", "root/spine/chest/shoulder_r/elbow_r/wrist_r/hand_r");
 		thunder1.AddExtraEffect("Elements/Fireball", "root/spine/chest/shoulder_r/elbow_r/wrist_r/hand_r", 0.1);

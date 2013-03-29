@@ -51,7 +51,7 @@ function SetEffectArm(attack, impact, knockback, ownerTeamID) {
 
 function SetRecordID(id) {
 	recordID = id;
-	Debug.Log("Setting : " + id);
+	//Debug.Log("Setting : " + id);
 }
 
 function CheckHit(other : Collider) {
