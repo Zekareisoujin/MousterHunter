@@ -41,6 +41,9 @@ class ProjectileScript extends GeneralEffectScript {
 			
 			oldTarget.Add(other);
 			
+			// Record the hit:
+			ResourceManager.GetResourceManager().GetCurrentActiveDataCollector().RegisterSuccessfulAttack(recordID);
+			
 			if (!penetrate)
 				Destroy(gameObject);
 				

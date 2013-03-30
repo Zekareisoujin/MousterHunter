@@ -93,7 +93,6 @@ function SpawnPlayerCharacter() {
 }
 
 function StartGame() {
-	dataCollector.StageStart();
 	currentSceneIdx = 0;
 	difficultyDirector.Initialize();
 	currentDifficultyLevel = difficultyDirector.GetCurrentDifficultyLevel();
@@ -127,6 +126,8 @@ function InitializeCurrentScene() {
 }
 
 function SceneTriggered(){
+	if (currentSceneIdx == 0)
+		dataCollector.StageStart();
 	SpawnEnemiesForCurrentScene();
 	guiHUDScript.showArrow = false;
 	LockScene(true);
