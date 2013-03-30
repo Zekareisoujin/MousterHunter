@@ -22,7 +22,7 @@ var boundRight;
 var spawnPointLeft 	: Vector3;	// Denotes the 2 spawn points
 var spawnPointRight : Vector3;	//	with respect to the 2 boundaries
 
-var currentSceneIdx;
+var currentSceneIdx : int;
 var currentSceneInfo;
 
 var enemyList	: Array;
@@ -190,11 +190,11 @@ function ReportDeath(casualty) {
 		if (Contains(enemyList, casualty)){
 			enemyList.Remove(casualty);
 			dataCollector.RegisterEnemyKilled();
-		}
-		guiHUDScript.enemiesRemaining = enemyList.length;
+			guiHUDScript.enemiesRemaining = enemyList.length;
 		
-		if (enemyList.length == 0)
-			SceneFinished();
+			if (enemyList.length == 0)
+				SceneFinished();
+		}
 	}
 }
 

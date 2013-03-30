@@ -132,6 +132,7 @@ function ApplyDamage(dmg) {
 			lifeBarScript.SetDisplayValue(displayVal);
 		}*/
 		
+		Debug.Log(teamID);
 		// Record the damage
 		dataCollector.RegisterDamage(dmg, teamID);
 	}
